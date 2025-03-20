@@ -1,0 +1,16 @@
+{
+    "mcpServers": {
+      "sqlite": {
+        "command": "uvx",
+        "args": ["mcp-server-sqlite", "--db-path", "./test.db"]
+      },
+      "puppeteer": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+      },
+      "armor": {
+        "command": "/usr/bin/python",
+        "args": ["/home/osiris/Projects/armor/mcp/armor_mcp.py"]
+      }
+    }
+  }
