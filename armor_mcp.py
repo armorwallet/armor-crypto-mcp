@@ -27,36 +27,10 @@ mcp = FastMCP("Armor API Server")
 
 # Global variable to hold the authenticated Armor API client
 # armor_client: ArmorWalletAPIClient | None = None
-ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyNTc3Njc1LCJpYXQiOjE3NDI1Nzc2NzYsImp0aSI6IjgwY2NjY2VlMDg0YzRhOThhNjVjMzUyYzMzZGUxMjJjIiwidXNlcl9pZCI6IjQ2Mzg4ZjhjLWNkMTctNDgxZC1hNDE3LWQ1MDFjMGIzNzk1ZSJ9.V0xbL2JlHQ0CWNLVn4m01kHBjzkzmfKdJXLTgdteaHY' # os.getenv('ARMOR_ACCESS_TOKEN')
+ACCESS_TOKEN = os.getenv('ARMOR_ACCESS_TOKEN')
 BASE_API_URL = 'https://armorai.dev'
 
 armor_client = ArmorWalletAPIClient(ACCESS_TOKEN)
-
-
-# @mcp.tool()
-# async def login(email: str, password: str) -> str:
-#     """
-#     Log in to Armor API.
-    
-#     This tool calls the ArmorWalletAPIClient.login method, stores the returned access token,
-#     and instantiates a new client for subsequent requests.
-#     """
-#     global armor_client
-#     try:
-#         # Create a temporary client (with empty token) to perform the login call.
-#         temp_client = ArmorWalletAPIClient(access_token="")
-#         result = await temp_client.login(email, password)
-#         token = result.get("access")
-#         if token:
-#             armor_client = ArmorWalletAPIClient(access_token=token)
-#             logger.info(f"User {email} logged in successfully.")
-#             return f"Login successful for {email}."
-#         else:
-#             logger.error("Login failed: No access token returned.")
-#             return "Login failed: No access token returned."
-#     except Exception as e:
-#         logger.exception("Login error")
-#         return f"Login failed: {str(e)}"
 
 
 @mcp.tool()
