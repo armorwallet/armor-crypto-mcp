@@ -11,6 +11,7 @@
       "armor": {
         "command": "/usr/bin/python",
         "args": ["/home/osiris/Projects/armor/mcp/armor_mcp.py"]
+
       }
     }
   }

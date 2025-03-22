@@ -209,14 +209,16 @@ class CancelDCAOrderResponse(TypedDict):
 
 
 class ArmorWalletAPIClient:
-    def __init__(self, access_token: str):
+    def __init__(self, access_token: str, base_api_url:str='https://armor.dev'):
+        self.base_api_url = base_api_url
         self.access_token = access_token
 
     async def _api_call(self, method: str, endpoint: str, payload: str = None) -> dict:
         """Utility function for API calls to the wallet.
            It sets common headers and raises errors on non-2xx responses.
         """
-        url = f"https://{BASE_API_URL}.armorwallet.ai/api/v1/{endpoint}"
+        url = f"{self.base_api_url}/api/v1/{endpoint}"
+        print(url)
         headers = {
             'Content-Type': 'application/json',
             'Authorization': f'Bearer {self.access_token}'
@@ -229,13 +231,6 @@ class ArmorWalletAPIClient:
             return response.json()
         except Exception:
             return {"text": response.text}
-
-    async def login(self, email: str, password: str) -> dict:
-        """Log in to the wallet API."""
-        payload = json.dumps({"email": email, "password": password})
-        result = await self._api_call("POST", "users/login/", payload)
-        self.access_token = result.get('access')
-        return result
 
     async def get_wallet_token_balance(self, wallet_token_pairs: List[WalletTokenPairs]) -> List[WalletTokenBalance]:
         """Get balances from a list of wallet and token pairs.
@@ -346,3 +341,18 @@ class ArmorWalletAPIClient:
         payload = json.dumps(cancel_dca_order_requests)
         return await self._api_call("POST", "transactions/dca-order/cancel/", payload)
 
+
+if __name__ == "__main__":
+    import uuid
+    import asyncio
+    BASE_API_URL = 'https://armorai.dev'
+    client = ArmorWalletAPIClient('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyNTc3Njc1LCJpYXQiOjE3NDI1Nzc2NzYsImp0aSI6IjgwY2NjY2VlMDg0YzRhOThhNjVjMzUyYzMzZGUxMjJjIiwidXNlcl9pZCI6IjQ2Mzg4ZjhjLWNkMTctNDgxZC1hNDE3LWQ1MDFjMGIzNzk1ZSJ9.V0xbL2JlHQ0CWNLVn4m01kHBjzkzmfKdJXLTgdteaHY')
+    
+    async def stuff():
+        r = await client.list_groups()
+        print(r)
+        r = await client.get_all_wallets()
+        print(r)
+        # r = await client.create_wallet(['nate1', 'nate2'])
+
+    asyncio.run(stuff())
