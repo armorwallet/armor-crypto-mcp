@@ -209,7 +209,7 @@ class CancelDCAOrderResponse(TypedDict):
 
 
 class ArmorWalletAPIClient:
-    def __init__(self, access_token: str, base_api_url:str='https://armor.dev'):
+    def __init__(self, access_token: str, base_api_url:str='https://armorai.dev/api/v1'):
         self.base_api_url = base_api_url
         self.access_token = access_token
 
@@ -217,7 +217,7 @@ class ArmorWalletAPIClient:
         """Utility function for API calls to the wallet.
            It sets common headers and raises errors on non-2xx responses.
         """
-        url = f"{self.base_api_url}/api/v1/{endpoint}"
+        url = f"{self.base_api_url}/{endpoint}"
         print(url)
         headers = {
             'Content-Type': 'application/json',

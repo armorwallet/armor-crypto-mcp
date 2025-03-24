@@ -17,4 +17,3 @@ Currently this repo is not very organized, working on organizing it. Here's a br
 4. put on scaleways
 5. register with uvx and all the others
 
-:check: Fix safexec issue
