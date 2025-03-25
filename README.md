@@ -1,7 +1,7 @@
 # Armor Crypto MCP
 Access blockchain, bridging, swapping, staking and crypto trading strategy for your Agent, all in one epic MCP.
        
-![Armor MCP]([https://armor-assets-repository.s3.nl-ams.scw.cloud/armor_mcp.png])
+![Armor MCP](https://armor-assets-repository.s3.nl-ams.scw.cloud/armor_mcp.png)
 
 ## Alpha Testing
 We are currently in pre-alpha, and we are testing the capabilities of various agents like Claude Desktop, Cline, Cursor, n8n, etc. 
