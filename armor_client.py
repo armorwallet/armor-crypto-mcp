@@ -209,7 +209,7 @@ class CancelDCAOrderResponse(TypedDict):
 
 
 class ArmorWalletAPIClient:
-    def __init__(self, access_token: str, base_api_url:str='https://armorai.dev/api/v1'):
+    def __init__(self, access_token: str, base_api_url:str='https://app.armorwallet.ai/api/v1'):
         self.base_api_url = base_api_url
         self.access_token = access_token
 

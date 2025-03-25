@@ -4,7 +4,11 @@
         "command": "/usr/bin/python",
         "args": [
             "/home/osiris/Projects/armor/mcp/armor_mcp.py"
-        ]
+        ],
+        "env": {
+            "ARMOR_ACCESS_TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyNjY0OTU2LCJpYXQiOjE3NDI2NjQ5NTcsImp0aSI6ImNlOTVmNmJiMDZkMzRmMWQ4NWI3NDcxZWFlNjc5OGVkIiwidXNlcl9pZCI6IjQ2Mzg4ZjhjLWNkMTctNDgxZC1hNDE3LWQ1MDFjMGIzNzk1ZSJ9.SLVv64udoeAr1X9enna_12J0nWfs4U578jRm72N2uw4",
+            "ARMOR_API_URL": "https://app.armorwallet.ai/api/v1"
+        }
       }
     }
-}
+  }
