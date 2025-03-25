@@ -1,0 +1,23 @@
+[project]
+name = "armor-crypto-mcp"
+version = "0.1.0"
+description = "MCP to interface with multiple blockchains, staking, DeFi, swap, bridging, wallet management, and to develop crypto trading strategies through tools like dynamic DCA"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+ "mcp>=1.1.0",
+ "python-dotenv>=1.0.0",
+ "requests>=2.31.0",
+ "uvicorn>=0.32.1",
+ "httpx"
+]
+[[project.authors]]
+name = "Armor Wallet"
+email = "info@armorwallet.ai"
+
+[build-system]
+requires = [ "hatchling",]
+build-backend = "hatchling.build"
+
+[project.scripts]
+mcp-pandoc = "armor_mcp:main"
