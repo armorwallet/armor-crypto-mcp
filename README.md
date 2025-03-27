@@ -1,4 +1,5 @@
 # Armor Crypto MCP
+*Alpha Test version 0.1.0*
 Access blockchain, bridging, swapping, staking and crypto trading strategy for your Agent, all in one epic MCP.
        
 ![Armor MCP](https://armor-assets-repository.s3.nl-ams.scw.cloud/armor_mcp.png)
