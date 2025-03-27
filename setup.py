@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="armor-crypto-mcp",
-    version="0.1.0",
+    version="0.1.1",
     description=(
         "MCP to interface with multiple blockchains, staking, DeFi, swap, bridging, wallet management, "
         "and to develop crypto trading strategies through tools like dynamic DCA"
