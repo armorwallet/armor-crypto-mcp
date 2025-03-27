@@ -11,15 +11,16 @@ We are currently in pre-alpha, and we are testing the capabilities of various ag
 ## Current Features & Tools
 - Wallet Management
     - Grouping & Organization
-    - 
+    - Archiving
 - Swap & Trades
     - DCA
     - Limit Orders
-- Bridge
+- Supports Solana blockchain
 
 ## Coming Soon
 - Staking
 - Armor Agents as a Tool
+- More Blockchain Support
 
 ## How Armor Crypto MCP Might be Used
 Here are some example prompts that we have been testing with our internal Armor Agents, but could use testing with other agents. Think of this MCP as the bridge to a large number of cryptocurrency ecosystems. Each tool we provide your agent can be combined with other tools to form powerful chains of action.
