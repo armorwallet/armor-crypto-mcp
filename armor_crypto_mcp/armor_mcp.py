@@ -9,7 +9,7 @@ from mcp.server.fastmcp import FastMCP, Context
 
 # Import the ArmorWalletAPIClient from your client module.
 # Ensure that the file with the Armor API client code is in your PYTHONPATH.
-from armor_client import ArmorWalletAPIClient
+from .armor_client import ArmorWalletAPIClient
 
 # Load environment variables (e.g. BASE_API_URL, etc.)
 load_dotenv()
@@ -23,7 +23,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Create an MCP server instance with FastMCP
-mcp = FastMCP("Armor API Server")
+mcp = FastMCP("Armor Crypto MCP")
 
 # Global variable to hold the authenticated Armor API client
 ACCESS_TOKEN = os.getenv('ARMOR_ACCESS_TOKEN')

@@ -8,3 +8,4 @@ trading strategies through dynamic DCA.
 
 __version__ = "0.1.0"
 
+
