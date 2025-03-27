@@ -55,7 +55,7 @@ jobs:
       #
       # ALTERNATIVE: if your GitHub Release name is the PyPI project version string
       # ALTERNATIVE: exactly, uncomment the following line instead:
-      # url: https://pypi.org/project/YOURPROJECT/${{ github.event.release.name }}
+      url: https://pypi.org/project/armor-crypto-mcp/${{ github.event.release.name }}
 
     steps:
       - name: Retrieve release distributions
