@@ -6,7 +6,7 @@ Access blockchain, bridging, swapping, staking and crypto trading strategy for y
 ![Armor MCP](https://armor-assets-repository.s3.nl-ams.scw.cloud/armor_mcp.png)
 
 ## Alpha Testing
-We are currently in pre-alpha, and we are testing the capabilities of various agents like Claude Desktop, Cline, Cursor, n8n, etc. 
+We are currently in pre-alpha, and we are testing the capabilities of various agents and agentic frameworks like Claude Desktop, Cline, Cursor, n8n, etc. 
 
 ## Current Features & Tools
 - Wallet Management
@@ -78,7 +78,8 @@ Cancel all my buy orders below 5% of the current market price in SOL
 - None of this is financial advice.
 
 ## How to Access
-Currently you need to have the armor NFT to get an API Key. More instructions coming soon.
+Currently you need to have the armor NFT to get an API Key.
+Get it [here](https://codex.armorwallet.ai/)
 
 ## Usage & Configuration
 To use the Armor MCP with your agent, you need the following configuration:
