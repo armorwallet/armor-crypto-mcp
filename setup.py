@@ -23,16 +23,17 @@ setup(
     ],
     author="Armor Wallet",
     author_email="info@armorwallet.ai",
+    license="GNU GPL v3",
     packages=find_packages(),
     entry_points={
         "console_scripts": [
-            "armor-crypto-mcp=armor_mcp:main",
+            "armor-crypto-mcp=armor_crypto_mcp.armor_mcp:main",
         ],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.11",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",  # Adjust if using a different license
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
 )
