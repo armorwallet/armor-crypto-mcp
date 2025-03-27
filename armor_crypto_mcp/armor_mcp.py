@@ -415,6 +415,8 @@ def login_prompt(email: str) -> str:
     return f"Please enter the Access token for your account {email}."
 
 
-# To run the server:
-if __name__ == "__main__":
+def main():
     mcp.run()
+    
+if __name__ == "__main__":
+    main()
