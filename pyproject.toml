@@ -20,4 +20,4 @@ requires = [ "hatchling",]
 build-backend = "hatchling.build"
 
 [project.scripts]
-armor-crypto-mcp = "armor_mcp:main"
+armor-crypto-mcp = "armor_crypto_mcp.armor_mcp:main"
