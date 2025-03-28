@@ -8,19 +8,10 @@ from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP, Context
 
 # Import the ArmorWalletAPIClient from your client module.
-# Ensure that the file with the Armor API client code is in your PYTHONPATH.
 from .armor_client import ArmorWalletAPIClient
 
 # Load environment variables (e.g. BASE_API_URL, etc.)
 load_dotenv()
-
-# Configure persistent logging (logs will be saved to armor_api_server.log)
-logging.basicConfig(
-    level=logging.INFO,
-    filename="armor_api_server.log",
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
 
 # Create an MCP server instance with FastMCP
 mcp = FastMCP("Armor Crypto MCP")
@@ -43,10 +34,9 @@ async def get_wallet_token_balance(wallet_token_pairs: List[Dict[str, Any]]) -> 
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.get_wallet_token_balance(wallet_token_pairs)
-        logger.info("Retrieved wallet token balances.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in get_wallet_token_balance")
         return [{"error": str(e)}]
 
 
@@ -61,10 +51,10 @@ async def conversion_api(conversion_requests: List[Dict[str, Any]]) -> List[Dict
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.conversion_api(conversion_requests)
-        logger.info("Conversion API executed successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in conversion_api")
+        
         return [{"error": str(e)}]
 
 
@@ -79,10 +69,10 @@ async def swap_quote(swap_quote_requests: List[Dict[str, Any]]) -> List[Dict[str
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.swap_quote(swap_quote_requests)
-        logger.info("Swap quote retrieved successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in swap_quote")
+        
         return [{"error": str(e)}]
 
 
@@ -97,10 +87,10 @@ async def swap_transaction(swap_transaction_requests: List[Dict[str, Any]]) -> L
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.swap_transaction(swap_transaction_requests)
-        logger.info("Swap transaction executed successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in swap_transaction")
+        
         return [{"error": str(e)}]
 
 
@@ -115,10 +105,10 @@ async def get_all_wallets() -> List[Dict[str, Any]]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.get_all_wallets()
-        logger.info("Retrieved all wallets successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in get_all_wallets")
+        
         return [{"error": str(e)}]
 
 
@@ -135,10 +125,10 @@ async def get_token_details(token_details_requests: list[dict]) -> list[dict]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.get_token_details(token_details_requests)
-        logger.info("Token details retrieved successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in get_token_details")
+        
         return [{"error": str(e)}]
 
 
@@ -151,10 +141,10 @@ async def list_groups() -> list[dict]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.list_groups()
-        logger.info("Wallet groups retrieved successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in list_groups")
+        
         return [{"error": str(e)}]
 
 
@@ -169,10 +159,10 @@ async def list_single_group(group_name: str) -> dict:
         return {"error": "Not logged in"}
     try:
         result = await armor_client.list_single_group(group_name)
-        logger.info(f"Details for group '{group_name}' retrieved successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in list_single_group")
+        
         return {"error": str(e)}
 
 
@@ -187,10 +177,10 @@ async def create_wallet(wallet_names_list: list[str]) -> list[dict]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.create_wallet(wallet_names_list)
-        logger.info("Wallets created successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in create_wallet")
+        
         return [{"error": str(e)}]
 
 
@@ -205,10 +195,10 @@ async def archive_wallets(wallet_names_list: list[str]) -> list[dict]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.archive_wallets(wallet_names_list)
-        logger.info("Wallets archived successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in archive_wallets")
+        
         return [{"error": str(e)}]
 
 
@@ -223,10 +213,10 @@ async def unarchive_wallets(wallet_names_list: list[str]) -> list[dict]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.unarchive_wallets(wallet_names_list)
-        logger.info("Wallets unarchived successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in unarchive_wallets")
+        
         return [{"error": str(e)}]
 
 
@@ -241,10 +231,10 @@ async def create_groups(group_names_list: list[str]) -> list[dict]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.create_groups(group_names_list)
-        logger.info("Groups created successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in create_groups")
+        
         return [{"error": str(e)}]
 
 
@@ -259,10 +249,10 @@ async def add_wallets_to_group(group_name: str, wallet_names_list: list[str]) ->
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.add_wallets_to_group(group_name, wallet_names_list)
-        logger.info(f"Wallets added to group '{group_name}' successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in add_wallets_to_group")
+        
         return [{"error": str(e)}]
 
 
@@ -277,10 +267,10 @@ async def archive_wallet_group(group_names_list: list[str]) -> list[dict]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.archive_wallet_group(group_names_list)
-        logger.info("Wallet groups archived successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in archive_wallet_group")
+        
         return [{"error": str(e)}]
 
 
@@ -295,10 +285,10 @@ async def unarchive_wallet_group(group_names_list: list[str]) -> list[dict]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.unarchive_wallet_group(group_names_list)
-        logger.info("Wallet groups unarchived successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in unarchive_wallet_group")
+        
         return [{"error": str(e)}]
 
 
@@ -313,10 +303,10 @@ async def remove_wallets_from_group(group_name: str, wallet_names_list: list[str
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.remove_wallets_from_group(group_name, wallet_names_list)
-        logger.info(f"Wallets removed from group '{group_name}' successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in remove_wallets_from_group")
+        
         return [{"error": str(e)}]
 
 
@@ -329,10 +319,10 @@ async def get_user_wallets_and_groups_list() -> dict:
         return {"error": "Not logged in"}
     try:
         result = await armor_client.get_user_wallets_and_groups_list()
-        logger.info("User wallets and groups retrieved successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in get_user_wallets_and_groups_list")
+        
         return {"error": str(e)}
 
 
@@ -347,10 +337,10 @@ async def transfer_tokens(transfer_tokens_requests: list[dict]) -> list[dict]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.transfer_tokens(transfer_tokens_requests)
-        logger.info("Tokens transferred successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in transfer_tokens")
+        
         return [{"error": str(e)}]
 
 
@@ -365,10 +355,10 @@ async def create_dca_order(dca_order_requests: list[dict]) -> list[dict]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.create_dca_order(dca_order_requests)
-        logger.info("DCA order created successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in create_dca_order")
+        
         return [{"error": str(e)}]
 
 
@@ -381,10 +371,10 @@ async def list_dca_orders() -> list[dict]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.list_dca_orders()
-        logger.info("DCA orders listed successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in list_dca_orders")
+        
         return [{"error": str(e)}]
 
 
@@ -399,10 +389,10 @@ async def cancel_dca_order(cancel_dca_order_requests: list[dict]) -> list[dict]:
         return [{"error": "Not logged in"}]
     try:
         result = await armor_client.cancel_dca_order(cancel_dca_order_requests)
-        logger.info("DCA order cancelled successfully.")
+        
         return result
     except Exception as e:
-        logger.exception("Error in cancel_dca_order")
+        
         return [{"error": str(e)}]
 
 

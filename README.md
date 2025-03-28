@@ -86,7 +86,7 @@ To use the Armor MCP with your agent, you need the following configuration:
 ```json
 {
   "mcpServers": {
-    "armor-wallet-mcp": {
+    "armor-crypto-mcp": {
       "command": "uvx",
       "args": ["armor-crypto-mcp"],
       "env": {
