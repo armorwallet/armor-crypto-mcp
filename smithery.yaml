@@ -6,11 +6,11 @@ startCommand:
     # JSON Schema defining the configuration options for the MCP.
     type: object
     required:
-      - armorAccessToken
+      - armorApiKey
     properties:
-      armorAccessToken:
+      armorApiKey:
         type: string
-        description: Access token for Armor API authentication.
+        description: API Key for Armor API authentication.
       armorApiUrl:
         type: string
         default: https://app.armorwallet.ai/api/v1
@@ -22,10 +22,10 @@ startCommand:
       command: 'armor-crypto-mcp',
       args: [],
       env: {
-        ARMOR_ACCESS_TOKEN: config.armorAccessToken,
+        ARMOR_API_KEY: config.armorApiKey,
         ARMOR_API_URL: config.armorApiUrl || 'https://app.armorwallet.ai/api/v1'
       }
     })
   exampleConfig:
-    armorAccessToken: example_token
+    armorApiKey: example_api_key
     armorApiUrl: https://app.armorwallet.ai/api/v1
