@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List, Optional, TypedDict, Literal
+from typing_extensions import List, Optional, TypedDict, Literal
 
 import httpx
 from dotenv import load_dotenv
