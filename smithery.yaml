@@ -1,0 +1,31 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - armorAccessToken
+    properties:
+      armorAccessToken:
+        type: string
+        description: Access token for Armor API authentication.
+      armorApiUrl:
+        type: string
+        default: https://app.armorwallet.ai/api/v1
+        description: The base URL for the Armor API.
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({
+      command: 'armor-crypto-mcp',
+      args: [],
+      env: {
+        ARMOR_ACCESS_TOKEN: config.armorAccessToken,
+        ARMOR_API_URL: config.armorApiUrl || 'https://app.armorwallet.ai/api/v1'
+      }
+    })
+  exampleConfig:
+    armorAccessToken: example_token
+    armorApiUrl: https://app.armorwallet.ai/api/v1
