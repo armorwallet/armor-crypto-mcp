@@ -1,6 +1,6 @@
 [project]
 name = "armor-crypto-mcp"
-version = "0.1.4"
+version = "0.1.5"
 description = "MCP to interface with multiple blockchains, staking, DeFi, swap, bridging, wallet management, and to develop crypto trading strategies through tools like dynamic DCA"
 readme = "README.md"
 requires-python = ">=3.11"

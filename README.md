@@ -90,7 +90,8 @@ To use the Armor MCP with your agent, you need the following configuration:
       "command": "uvx",
       "args": ["armor-crypto-mcp"],
       "env": {
-        "ARMOR_ACCESS_TOKEN": "<PUT-YOUR-KEY-HERE>"
+        "ARMOR_ACCESS_TOKEN": "<PUT-YOUR-KEY-HERE>",
+        "ARMOR_API_URL": "https://app.armorwallet.ai/api/v1"
       }
     }
   }
