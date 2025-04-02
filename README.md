@@ -31,6 +31,8 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
 👫 Social Sentiment
 
 🔮 Prediction
+
+![Armor MCP Diagram](https://armor-assets-repository.s3.nl-ams.scw.cloud/amor_mcp_diagram.png)
 <br />
 <br />
 <br />
