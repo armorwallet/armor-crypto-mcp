@@ -31,16 +31,22 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
 👫 Social Sentiment
 
 🔮 Prediction
-\
-\
-\
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 # Installation
 ```text
 pip install armor-cryptp-mcp
 ```
-&NewLine;
-&NewLine;
-&NewLine;
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 # Alpha Testing
 
 We are currently in pre-alpha, and we are testing the capabilities of various agents and agentic frameworks like Claude Desktop, Cline, Cursor, n8n, etc. 
@@ -78,9 +84,12 @@ To use the Armor MCP with your agent, you need the following configuration:
   }
 }
 ```
-\
-\
-\
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 # Installation in Claude Desktop (must have Developer Mode enabled)
 1. Open Claude Desktop's File Menu top left of the window.
 2. Go to File > Settings
@@ -94,9 +103,12 @@ Coming soon
 
 ## Installation for n8n
 Coming soon
-\
-\
-\
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 # Using Armor MCP
 Once you have setup the Armor MCP [here are some prompts you can use to get started](https://github.com/armorwallet/armor-crypto-mcp/blob/main/README_prompts.md).
 
