@@ -1,7 +1,7 @@
 # Armor Crypto MCP
 *Alpha Test version 0.1.2*
 
-Access blockchain, bridging, swapping, staking and crypto trading strategy for your Agent, all in one epic MCP.
+A single source for interating AI Agents with the Crypto ecosystem. This includes Wallet creatio and management, swaps, transfers, event based trades like DCA, stop loss and take profit and much more. The Armor MCP supports Solana in Alpha and when in beta will support more than a dozen blockchans including Ethereum. Base, Avalanche, Bitcoin, Sui, Berachain, megaETH, Optamism, Ton, BNB and Arbitrum among others. Using Armors' MCP you can bring all of crypto into your AI Agent with a unified logic and complete set of tools.
        
 ![Armor MCP](https://armor-assets-repository.s3.nl-ams.scw.cloud/armor_mcp.png)
 
