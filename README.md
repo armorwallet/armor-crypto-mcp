@@ -44,9 +44,6 @@ pip install armor-cryptp-mcp
 <br />
 <br />
 <br />
-<br />
-<br />
-<br />
 # Alpha Testing
 
 We are currently in pre-alpha, and we are testing the capabilities of various agents and agentic frameworks like Claude Desktop, Cline, Cursor, n8n, etc. 
@@ -90,13 +87,14 @@ To use the Armor MCP with your agent, you need the following configuration:
 <br />
 <br />
 <br />
-# Installation in Claude Desktop (must have Developer Mode enabled)
-1. Open Claude Desktop's File Menu top left of the window.
-2. Go to File > Settings
-3. Under Developer, click Edit Configuration
-4. In the config file, insert the `armor-wallet-mcp` section from above
-5. Make sure to replace the placeholder with your API key
-6. Save the file and start a new Chat in Claude Desktop
+# Installation in Claude Desktop
+1. Must have Developer Mode enabled
+2. Open Claude Desktop's File Menu top left of the window.
+3. Go to File > Settings
+4. Under Developer, click Edit Configuration
+5. In the config file, insert the `armor-wallet-mcp` section from above
+6. Make sure to replace the placeholder with your API key
+7. Save the file and start a new Chat in Claude Desktop
 
 ## Installation in Cline
 Coming soon
@@ -111,4 +109,9 @@ Coming soon
 <br />
 # Using Armor MCP
 Once you have setup the Armor MCP [here are some prompts you can use to get started](https://github.com/armorwallet/armor-crypto-mcp/blob/main/README_prompts.md).
-
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
