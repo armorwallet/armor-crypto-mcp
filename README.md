@@ -131,7 +131,7 @@ Coming soon
 <br />
 <br />
 # Using Armor MCP
-Once you have setup the Armor MCP [here are some prompts you can use to get started](https://github.com/armorwallet/armor-crypto-mcp/blob/main/README_prompts.md).
+Once you have setup the Armor MCP [here are some prompts you can use to get started](https://github.com/armorwallet/armor-crypto-mcp/blob/main/README_prompts.md)
 <br />
 <br />
 <br />
