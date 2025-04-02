@@ -6,7 +6,7 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
 ![Armor MCP](https://armor-assets-repository.s3.nl-ams.scw.cloud/armor_mcp.png)
 
 # Features
-***
+
 🧠 AI Native
 
 📙 Wallet Management
@@ -28,12 +28,12 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
 🔮 Prediction
 
 # Installation
-***
+
 
 
 
 ## Alpha Testing
-***
+
 We are currently in pre-alpha, and we are testing the capabilities of various agents and agentic frameworks like Claude Desktop, Cline, Cursor, n8n, etc. 
 
 ## Current Features & Tools
