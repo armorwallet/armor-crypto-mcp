@@ -47,6 +47,7 @@ pip install armor-cryptp-mcp
 <br />
 <br />
 <br />
+
 # Alpha Testing
 
 We are currently in pre-alpha, and we are testing the capabilities of various agents and agentic frameworks like Claude Desktop, Cline, Cursor, n8n, etc. 
@@ -90,6 +91,7 @@ To use the Armor MCP with your agent, you need the following configuration:
 <br />
 <br />
 <br />
+
 # Installation in Claude Desktop
 1. Must have Developer Mode enabled
 2. Open Claude Desktop's File Menu top left of the window.
