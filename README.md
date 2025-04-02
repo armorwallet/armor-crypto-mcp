@@ -5,7 +5,7 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
        
 ![Armor MCP](https://armor-assets-repository.s3.nl-ams.scw.cloud/armor_mcp.png)
 
-#Features
+# Features
 ***
 🧠 AI Native
 
@@ -27,7 +27,7 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
 
 🔮 Prediction
 
-#Installation
+# Installation
 ***
 
 
