@@ -81,6 +81,11 @@ Cancel all my buy orders below 5% of the current market price in SOL
 Currently you need to have the armor NFT to get an API Key.
 Get it [here](https://codex.armorwallet.ai/)
 
+## Installation
+1. Make sure you have python installed
+2. Run `pip install uv` in a terminal (command line interpreter)
+3. Your agent software (Claude, etc.) will handle execution of the MCP server
+
 ## Usage & Configuration
 To use the Armor MCP with your agent, you need the following configuration:
 ```json
@@ -109,4 +114,14 @@ To use the Armor MCP with your agent, you need the following configuration:
 Coming soon
 
 ## Installation for n8n
-Coming soon
+1. Open the n8n app
+2. Bottom-left of screen click `...` next to your username and click `Settings`
+3. On the left panel, click `Community nodes` and then `Install a Community Node` button
+4. In the search field for `npm Package Name` type in *mcp*
+5. Install `MCP Nodes`
+6. Add any MCP node, for example: `List Tools`
+7. In the MCP Client `Parameters` tab, click `Select Credential` and click `Create new credential`
+8. Under `Command` enter `uvx`
+9. Under `Arguments` enter `armor-crypto-mcp`
+10. Under `Environments` enter `ARMOR_API_KEY=eyJhbGciOiJIUzI1NiIsIn...` paste the full API Key value after the `=`
+11. Back in the `Parameters` tab you can choose the MCP `Operation` for that Node

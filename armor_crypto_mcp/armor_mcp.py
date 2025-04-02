@@ -54,7 +54,7 @@ armor_client = ArmorWalletAPIClient(ACCESS_TOKEN, base_api_url=BASE_API_URL)
 @mcp.tool()
 async def get_wallet_token_balance(wallet_token_pairs: List[WalletTokenPairs]) -> List[WalletTokenBalance]:
     """
-    Get the balance for a list of wallet/token pairs.
+    Get the balance for a list of wallet/token pairs. The token should be a token address, not a symbol.
     
     Expects a list of WalletTokenPairs, returns a list of WalletTokenBalance.
     """
