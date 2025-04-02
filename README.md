@@ -4,9 +4,9 @@
 A single source for interating AI Agents with the Crypto ecosystem. This includes Wallet creatio and management, swaps, transfers, event based trades like DCA, stop loss and take profit and much more. The Armor MCP supports Solana in Alpha and when in beta will support more than a dozen blockchans including Ethereum. Base, Avalanche, Bitcoin, Sui, Berachain, megaETH, Optamism, Ton, BNB and Arbitrum among others. Using Armors' MCP you can bring all of crypto into your AI Agent with a unified logic and complete set of tools.
        
 ![Armor MCP](https://armor-assets-repository.s3.nl-ams.scw.cloud/armor_mcp.png)
-&nbsp;
-&nbsp;
-&nbsp;
+\
+\
+\
 # Features
 
 🧠 AI Native
@@ -28,16 +28,16 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
 👫 Social Sentiment
 
 🔮 Prediction
-&nbsp;
-&nbsp;
-&nbsp;
+\
+\
+\
 # Installation
 ```text
 pip install armor-cryptp-mcp
 ```
-&nbsp;
-&nbsp;
-&nbsp;
+\
+\
+\
 # Alpha Testing
 
 We are currently in pre-alpha, and we are testing the capabilities of various agents and agentic frameworks like Claude Desktop, Cline, Cursor, n8n, etc. 
@@ -55,9 +55,7 @@ We are currently in pre-alpha, and we are testing the capabilities of various ag
 - Staking
 - Armor Agents as a Tool
 - More Blockchain Support
-&nbsp;
-&nbsp;
-&nbsp;
+
 ## MCP Setup
 Currently you need to have the Armor NFT to get an API Key.
 Get it [here](https://codex.armorwallet.ai/)
@@ -77,9 +75,9 @@ To use the Armor MCP with your agent, you need the following configuration:
   }
 }
 ```
-&nbsp;
-&nbsp;
-&nbsp;
+\
+\
+\
 # Installation in Claude Desktop (must have Developer Mode enabled)
 1. Open Claude Desktop's File Menu top left of the window.
 2. Go to File > Settings
@@ -93,9 +91,9 @@ Coming soon
 
 ## Installation for n8n
 Coming soon
-&nbsp;
-&nbsp;
-&nbsp;
+\
+\
+\
 # Using Armor MCP
 Once you have setup the Armor MCP [here are some prompts you can use to get started](https://github.com/armorwallet/armor-crypto-mcp/blob/main/README_prompts.md).
 
