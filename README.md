@@ -4,9 +4,9 @@
 A single source for interating AI Agents with the Crypto ecosystem. This includes Wallet creatio and management, swaps, transfers, event based trades like DCA, stop loss and take profit and much more. The Armor MCP supports Solana in Alpha and when in beta will support more than a dozen blockchans including Ethereum. Base, Avalanche, Bitcoin, Sui, Berachain, megaETH, Optamism, Ton, BNB and Arbitrum among others. Using Armors' MCP you can bring all of crypto into your AI Agent with a unified logic and complete set of tools.
        
 ![Armor MCP](https://armor-assets-repository.s3.nl-ams.scw.cloud/armor_mcp.png)
-\
-\
-\
+&NewLine;
+&NewLine;
+&NewLine;
 # Features
 
 🧠 AI Native
@@ -35,9 +35,9 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
 ```text
 pip install armor-cryptp-mcp
 ```
-\
-\
-\
+&NewLine;
+&NewLine;
+&NewLine;
 # Alpha Testing
 
 We are currently in pre-alpha, and we are testing the capabilities of various agents and agentic frameworks like Claude Desktop, Cline, Cursor, n8n, etc. 
