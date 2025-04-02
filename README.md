@@ -28,7 +28,9 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
 🔮 Prediction
 
 # Installation
-```pip install armor-cryptp-mcp```
+```text
+pip install armor-cryptp-mcp
+```
 
 
 
