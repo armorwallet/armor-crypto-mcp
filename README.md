@@ -8,23 +8,28 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
 #Features
 ***
 🧠 AI Native
+
 📙 Wallet Management
+
 🔃 Swaps
+
 🌈 Specialized trades (DCA, Stop Loss etc.)
+
 ⛓️ Multi-chain
+
 ↔️ Cross-chain transations
+
 🥩 Staking
+
 🤖 Fast intergration to Agentic frameworks
+
 👫 Social Sentiment
+
 🔮 Prediction
 
 #Installation
 ***
-{% tabs %}
-{% tab title="Windows" %} Here are the instructions for Windows {% endtab %}
-{% tab title="OSX" %} Here are the instructions for macOS {% endtab %}
-{% tab title="Linux" %} Here are the instructions for Linux {% endtab %}
-{% endtabs %}
+
 
 
 ## Alpha Testing
