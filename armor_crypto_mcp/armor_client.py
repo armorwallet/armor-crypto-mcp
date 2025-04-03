@@ -1,6 +1,5 @@
 import json
 import os
-from typing import List, Optional
 from pydantic import BaseModel, Field
 from typing_extensions import List, Optional, Literal
 
