@@ -231,7 +231,7 @@ class CancelDCAOrderResponse(BaseModel):
 
 
 class ArmorWalletAPIClient:
-    def __init__(self, access_token: str, base_api_url:str='https://app.armorwallet.ai/api/v1'):
+    def __init__(self, access_token: str, base_api_url: str = 'https://app.armorwallet.ai/api/v1'):
         self.base_api_url = base_api_url
         self.access_token = access_token
 
@@ -255,24 +255,35 @@ class ArmorWalletAPIClient:
             return {"text": response.text}
 
     async def get_wallet_token_balance(self, wallet_token_pairs: List[WalletTokenPairs]) -> List[WalletTokenBalance]:
-        """Get balances from a list of wallet and token pairs.
-        """
-        payload = json.dumps(wallet_token_pairs)
+        """Get balances from a list of wallet and token pairs."""
+        payload = json.dumps(
+            wallet_token_pairs,
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "tokens/wallet-token-balance/", payload)
 
     async def conversion_api(self, conversion_request: List[ConversionRequest]) -> List[ConversionResponse]:
         """Perform a token conversion."""
-        payload = json.dumps(conversion_request)
+        payload = json.dumps(
+            conversion_request,
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "tokens/token-price-conversion/", payload)
 
     async def swap_quote(self, swap_quote_requests: List[SwapQuoteRequest]) -> List[SwapQuoteResponse]:
         """Obtain a swap quote."""
-        payload = json.dumps(swap_quote_requests)
+        payload = json.dumps(
+            swap_quote_requests,
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "transactions/quote/", payload)
 
     async def swap_transaction(self, swap_transaction_requests: List[SwapTransactionRequest]) -> List[SwapTransactionResponse]:
         """Execute the swap transactions."""
-        payload = json.dumps(swap_transaction_requests)
+        payload = json.dumps(
+            swap_transaction_requests,
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "transactions/swap/", payload)
 
     async def get_wallets_from_group(self, group_name: str) -> list:
@@ -289,7 +300,10 @@ class ArmorWalletAPIClient:
 
     async def get_token_details(self, token_details_requests: List[TokenDetailsRequest]) -> List[TokenDetailsResponse]:
         """Retrieve token details."""
-        payload = json.dumps(token_details_requests)
+        payload = json.dumps(
+            token_details_requests,
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "tokens/search-token/", payload)
 
     async def list_groups(self) -> List[GroupInfo]:
@@ -302,42 +316,66 @@ class ArmorWalletAPIClient:
 
     async def create_wallet(self, wallet_names_list: list) -> List[WalletInfo]:
         """Create new wallets given a list of wallet names."""
-        payload = json.dumps([{"name": wallet_name} for wallet_name in wallet_names_list])
+        payload = json.dumps(
+            [{"name": wallet_name} for wallet_name in wallet_names_list],
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "wallets/", payload)
 
     async def archive_wallets(self, wallet_names_list: list) -> List[WalletArchiveOrUnarchiveResponse]:
         """Archive the wallets specified in the list."""
-        payload = json.dumps([{"wallet": wallet_name} for wallet_name in wallet_names_list])
+        payload = json.dumps(
+            [{"wallet": wallet_name} for wallet_name in wallet_names_list],
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "wallets/archive/", payload)
 
     async def unarchive_wallets(self, wallet_names_list: list) -> List[WalletArchiveOrUnarchiveResponse]:
         """Unarchive the wallets specified in the list."""
-        payload = json.dumps([{"wallet": wallet_name} for wallet_name in wallet_names_list])
+        payload = json.dumps(
+            [{"wallet": wallet_name} for wallet_name in wallet_names_list],
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "wallets/unarchive/", payload)
 
     async def create_groups(self, group_names_list: list) -> List[CreateGroupResponse]:
         """Create new wallet groups given a list of group names."""
-        payload = json.dumps([{"name": group_name} for group_name in group_names_list])
+        payload = json.dumps(
+            [{"name": group_name} for group_name in group_names_list],
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "wallets/groups/", payload)
 
     async def add_wallets_to_group(self, group_name: str, wallet_names_list: list) -> List[AddWalletToGroupResponse]:
         """Add wallets to a specific group."""
-        payload = json.dumps([{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list])
+        payload = json.dumps(
+            [{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list],
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "wallets/add-wallet-to-group/", payload)
 
     async def archive_wallet_group(self, group_names_list: list) -> List[GroupArchiveOrUnarchiveResponse]:
         """Archive the specified wallet groups."""
-        payload = json.dumps([{"group": group_name} for group_name in group_names_list])
+        payload = json.dumps(
+            [{"group": group_name} for group_name in group_names_list],
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "wallets/group-archive/", payload)
 
     async def unarchive_wallet_group(self, group_names_list: list) -> List[GroupArchiveOrUnarchiveResponse]:
         """Unarchive the specified wallet groups."""
-        payload = json.dumps([{"group": group_name} for group_name in group_names_list])
+        payload = json.dumps(
+            [{"group": group_name} for group_name in group_names_list],
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "wallets/group-unarchive/", payload)
 
     async def remove_wallets_from_group(self, group_name: str, wallet_names_list: list) -> List[RemoveWalletFromGroupResponse]:
         """Remove wallets from a group."""
-        payload = json.dumps([{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list])
+        payload = json.dumps(
+            [{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list],
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "wallets/remove-wallet-from-group/", payload)
 
     async def get_user_wallets_and_groups_list(self) -> UserWalletsAndGroupsResponse:
@@ -346,12 +384,18 @@ class ArmorWalletAPIClient:
 
     async def transfer_tokens(self, transfer_tokens_requests: List[TransferTokensRequest]) -> List[TransferTokenResponse]:
         """Transfer tokens from one wallet to another."""
-        payload = json.dumps(transfer_tokens_requests)
+        payload = json.dumps(
+            transfer_tokens_requests,
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "transfers/transfer/", payload)
 
     async def create_dca_order(self, dca_order_requests: List[DCAOrderRequest]) -> List[DCAOrderResponse]:
         """Create a DCA order."""
-        payload = json.dumps(dca_order_requests)
+        payload = json.dumps(
+            dca_order_requests,
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "transactions/dca-order/", payload)
 
     async def list_dca_orders(self) -> List[DCAOrderResponse]:
@@ -360,6 +404,8 @@ class ArmorWalletAPIClient:
 
     async def cancel_dca_order(self, cancel_dca_order_requests: List[CancelDCAOrderRequest]) -> List[CancelDCAOrderResponse]:
         """Cancel a DCA order."""
-        payload = json.dumps(cancel_dca_order_requests)
+        payload = json.dumps(
+            cancel_dca_order_requests,
+            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
+        )
         return await self._api_call("POST", "transactions/dca-order/cancel/", payload)
-
