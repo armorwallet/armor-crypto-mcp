@@ -77,7 +77,7 @@ Get it [here](https://codex.armorwallet.ai/)
 1. Make sure you have python installed
 2. Install uv:
    - For Mac: Run `brew install uv` in terminal
-   - For Linux/Windows: Run `pip install uv` in terminal
+   - For Linux/Windows: Run `pip install uv` in terminal (command line interpreter)
 3. Your agent software (Claude, etc.) will handle execution of the MCP server
 
 ## Usage & Configuration
