@@ -3,6 +3,14 @@
 ## How Armor Crypto MCP Might be Used
 Here are some example prompts that we have been testing with our internal Armor Agents, but could use testing with other agents. Think of this MCP as the bridge to a large number of cryptocurrency ecosystems. Each tool we provide your agent can be combined with other tools to form powerful chains of action.
 
+### General Questions
+```
+What can I do in Armor?
+```
+```
+What tools does Armor make available?
+```
+
 ### Wallet Management
 - Creating wallets
 ```
