@@ -2,17 +2,19 @@ import json
 import os
 from pydantic import BaseModel, Field
 from typing_extensions import List, Optional, Literal
-
 import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
 BASE_API_URL = os.getenv("BASE_API_URL")
 
-# Pydantic data models for API client
+# ------------------------------
+# BaseModel Definitions (unchanged)
+# ------------------------------
+
 class WalletTokenPairs(BaseModel):
-    wallet: str = Field(description="name of wallet")
-    token: str = Field(description="public address of token")
+    wallet: str = Field(description="The name of wallet. To get wallet names use `get_user_wallets_and_groups_list`")
+    token: str = Field(description="public address of token. To get the address from a token symbol use `get_token_details`")
 
 
 class WalletTokenBalance(BaseModel):
@@ -54,7 +56,7 @@ class SwapQuoteResponse(BaseModel):
 
 
 class SwapTransactionRequest(BaseModel):
-    transaction_ids: str = Field(description="unique ids of the generated swap quotes")
+    transaction_id: str = Field(description="unique id of the generated swap quote")
 
 
 class SwapTransactionResponse(BaseModel):
@@ -72,7 +74,7 @@ class WalletBalance(BaseModel):
     symbol: str = Field(description="symbol of the token")
     decimals: int = Field(description="number of decimals of the token")
     amount: float = Field(description="balance of the token")
-    usd_price: str = Field(description="price of the token in USD")  # Using str since the API returns price as string
+    usd_price: str = Field(description="price of the token in USD")
     usd_amount: float = Field(description="balance of the token in USD")
 
 
@@ -170,8 +172,8 @@ class UserWalletsAndGroupsResponse(BaseModel):
 
 class TransferTokensRequest(BaseModel):
     from_wallet: str = Field(description="name of the wallet to transfer tokens from")
-    to_wallet_address: str = Field(description="public address of the wallet to transfer tokens to")
-    token: str = Field(description="public address of the token to transfer")
+    to_wallet_address: str = Field(description="public address of the wallet to transfer tokens to. Use `get_user_wallets_and_group_list` if you only have a wallet name")
+    token: str = Field(description="public contract address of the token to transfer. To get the address from a token symbol use `get_token_details`")
     amount: float = Field(description="amount of tokens to transfer")
 
 
@@ -186,8 +188,8 @@ class TransferTokenResponse(BaseModel):
 
 class DCAOrderRequest(BaseModel):
     wallet: str = Field(description="name of the wallet")
-    input_token: str = Field(description="public address of the input token")
-    output_token: str = Field(description="public address of the output token")
+    input_token: str = Field(description="public address of the input token. To get the address from a token symbol use `get_token_details`")
+    output_token: str = Field(description="public address of the output token. To get the address from a token symbol use `get_token_details`")
     amount: float = Field(description="amount of tokens to invest")
     cron_expression: str = Field(description="cron expression for the DCA order")
     strategy_duration: int = Field(description="duration of the DCA order")
@@ -214,11 +216,11 @@ class DCAOrderResponse(BaseModel):
     total_cycles: int = Field(description="total number of cycles")
     human_readable_expiry: str = Field(description="human readable expiry date of the DCA order")
     status: str = Field(description="status of the DCA order")
-    input_token_address: str = Field(description="public address of the input token")
-    output_token_address: str = Field(description="public address of the output token")
+    input_token_address: str = Field(description="public address of the input token. To get the address from a token symbol use `get_token_details`")
+    output_token_address: str = Field(description="public address of the output token. To get the address from a token symbol use `get_token_details`")
     wallet_name: str = Field(description="name of the wallet")
     watchers: List[DCAWatcher] = Field(description="list of watchers for the DCA order")
-    dca_transactions: List[dict] = Field(description="list of DCA transactions")  # Can be further typed if transaction structure is known
+    dca_transactions: List[dict] = Field(description="list of DCA transactions")  # Can be further typed if structure is known
 
 
 class CancelDCAOrderRequest(BaseModel):
@@ -230,60 +232,118 @@ class CancelDCAOrderResponse(BaseModel):
     status: str = Field(description="status of the DCA order")
 
 
+# ------------------------------
+# Container Models for List Inputs
+# ------------------------------
+
+class WalletTokenPairsContainer(BaseModel):
+    wallet_token_pairs: List[WalletTokenPairs]
+
+
+class ConversionRequestContainer(BaseModel):
+    conversion_requests: List[ConversionRequest]
+
+
+class SwapQuoteRequestContainer(BaseModel):
+    swap_quote_requests: List[SwapQuoteRequest]
+
+
+class SwapTransactionRequestContainer(BaseModel):
+    swap_transaction_requests: List[SwapTransactionRequest]
+
+
+class TokenDetailsRequestContainer(BaseModel):
+    token_details_requests: List[TokenDetailsRequest]
+
+
+class TransferTokensRequestContainer(BaseModel):
+    transfer_tokens_requests: List[TransferTokensRequest]
+
+
+class DCAOrderRequestContainer(BaseModel):
+    dca_order_requests: List[DCAOrderRequest]
+
+
+class CancelDCAOrderRequestContainer(BaseModel):
+    cancel_dca_order_requests: List[CancelDCAOrderRequest]
+
+
+# ------------------------------
+# API Client
+# ------------------------------
+
+# Setup logger for the module
+import logging
+import traceback
+
 class ArmorWalletAPIClient:
-    def __init__(self, access_token: str, base_api_url: str = 'https://app.armorwallet.ai/api/v1'):
+    def __init__(self, access_token: str, base_api_url: str = 'https://app.armorwallet.ai/api/v1', log_path=None):
         self.base_api_url = base_api_url
         self.access_token = access_token
+
+        if log_path is not None:
+            self.logger = logging.getLogger(__name__)
+            self.logger.setLevel(logging.DEBUG)
+            file_handler = logging.FileHandler(log_path)
+            file_handler.setLevel(logging.DEBUG)
+            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            file_handler.setFormatter(formatter)
+            self.logger.addHandler(file_handler)
+        else:
+            self.logger = None
 
     async def _api_call(self, method: str, endpoint: str, payload: str = None) -> dict:
         """Utility function for API calls to the wallet.
            It sets common headers and raises errors on non-2xx responses.
         """
         url = f"{self.base_api_url}/{endpoint}"
-        print(url)
+        payload = json.dumps(payload)
+        if self.logger:
+            self.logger.debug(f"Request: {method} {url} Payload: {payload}")
         headers = {
             'Content-Type': 'application/json',
             'Authorization': f'Bearer {self.access_token}'
         }
-        async with httpx.AsyncClient(timeout=30) as client:
-            response = await client.request(method, url, headers=headers, data=payload)
-        if response.status_code >= 400:
-            raise Exception(f"API Error {response.status_code}: {response.text}")
         try:
-            return response.json()
-        except Exception:
-            return {"text": response.text}
+            async with httpx.AsyncClient(timeout=30) as client:
+                response = await client.request(method, url, headers=headers, data=payload, follow_redirects=False)
+                
+                if self.logger:
+                    self.logger.debug(f"Response status: {response.status_code} Response: {response.text}")
+            if response.status_code >= 400:
+                if self.logger:
+                    self.logger.error(f"API Error {response.status_code}: {response.text}")
+                raise Exception(f"API Error {response.status_code}: {response.text}")
+            try:
+                return response.json()
+            except Exception:
+                if self.logger:
+                    self.logger.error(f"JSON Parsing: {response.text}")
+                return {"text": response.text}
+        except Exception as e:
+            traceback.print_exc()
+            if self.logger:
+                self.logger.error(f"{e}")
+            return {"text": str(e)}
 
-    async def get_wallet_token_balance(self, wallet_token_pairs: List[WalletTokenPairs]) -> List[WalletTokenBalance]:
+    async def get_wallet_token_balance(self, data: WalletTokenPairsContainer) -> List[WalletTokenBalance]:
         """Get balances from a list of wallet and token pairs."""
-        payload = json.dumps(
-            wallet_token_pairs,
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = [v.model_dump() for v in data.wallet_token_pairs]
         return await self._api_call("POST", "tokens/wallet-token-balance/", payload)
 
-    async def conversion_api(self, conversion_request: List[ConversionRequest]) -> List[ConversionResponse]:
+    async def conversion_api(self, data: ConversionRequestContainer) -> List[ConversionResponse]:
         """Perform a token conversion."""
-        payload = json.dumps(
-            conversion_request,
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = [v.model_dump() for v in data.conversion_requests]
         return await self._api_call("POST", "tokens/token-price-conversion/", payload)
 
-    async def swap_quote(self, swap_quote_requests: List[SwapQuoteRequest]) -> List[SwapQuoteResponse]:
+    async def swap_quote(self, data: SwapQuoteRequestContainer) -> List[SwapQuoteResponse]:
         """Obtain a swap quote."""
-        payload = json.dumps(
-            swap_quote_requests,
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = [v.model_dump() for v in data.swap_quote_requests]
         return await self._api_call("POST", "transactions/quote/", payload)
 
-    async def swap_transaction(self, swap_transaction_requests: List[SwapTransactionRequest]) -> List[SwapTransactionResponse]:
+    async def swap_transaction(self, data: SwapTransactionRequestContainer) -> List[SwapTransactionResponse]:
         """Execute the swap transactions."""
-        payload = json.dumps(
-            swap_transaction_requests,
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = [v.model_dump() for v in data.swap_transaction_requests]
         return await self._api_call("POST", "transactions/swap/", payload)
 
     async def get_wallets_from_group(self, group_name: str) -> list:
@@ -298,12 +358,9 @@ class ArmorWalletAPIClient:
         """Return all wallets with balances."""
         return await self._api_call("GET", "wallets/")
 
-    async def get_token_details(self, token_details_requests: List[TokenDetailsRequest]) -> List[TokenDetailsResponse]:
+    async def get_token_details(self, data: TokenDetailsRequestContainer) -> List[TokenDetailsResponse]:
         """Retrieve token details."""
-        payload = json.dumps(
-            token_details_requests,
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = [v.model_dump() for v in data.token_details_requests]
         return await self._api_call("POST", "tokens/search-token/", payload)
 
     async def list_groups(self) -> List[GroupInfo]:
@@ -316,96 +373,63 @@ class ArmorWalletAPIClient:
 
     async def create_wallet(self, wallet_names_list: list) -> List[WalletInfo]:
         """Create new wallets given a list of wallet names."""
-        payload = json.dumps(
-            [{"name": wallet_name} for wallet_name in wallet_names_list],
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = json.dumps([{"name": wallet_name} for wallet_name in wallet_names_list])
         return await self._api_call("POST", "wallets/", payload)
 
     async def archive_wallets(self, wallet_names_list: list) -> List[WalletArchiveOrUnarchiveResponse]:
         """Archive the wallets specified in the list."""
-        payload = json.dumps(
-            [{"wallet": wallet_name} for wallet_name in wallet_names_list],
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = json.dumps([{"wallet": wallet_name} for wallet_name in wallet_names_list])
         return await self._api_call("POST", "wallets/archive/", payload)
 
     async def unarchive_wallets(self, wallet_names_list: list) -> List[WalletArchiveOrUnarchiveResponse]:
         """Unarchive the wallets specified in the list."""
-        payload = json.dumps(
-            [{"wallet": wallet_name} for wallet_name in wallet_names_list],
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = json.dumps([{"wallet": wallet_name} for wallet_name in wallet_names_list])
         return await self._api_call("POST", "wallets/unarchive/", payload)
 
     async def create_groups(self, group_names_list: list) -> List[CreateGroupResponse]:
         """Create new wallet groups given a list of group names."""
-        payload = json.dumps(
-            [{"name": group_name} for group_name in group_names_list],
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = json.dumps([{"name": group_name} for group_name in group_names_list])
         return await self._api_call("POST", "wallets/groups/", payload)
 
     async def add_wallets_to_group(self, group_name: str, wallet_names_list: list) -> List[AddWalletToGroupResponse]:
         """Add wallets to a specific group."""
-        payload = json.dumps(
-            [{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list],
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = json.dumps([{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list])
         return await self._api_call("POST", "wallets/add-wallet-to-group/", payload)
 
     async def archive_wallet_group(self, group_names_list: list) -> List[GroupArchiveOrUnarchiveResponse]:
         """Archive the specified wallet groups."""
-        payload = json.dumps(
-            [{"group": group_name} for group_name in group_names_list],
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = json.dumps([{"group": group_name} for group_name in group_names_list])
         return await self._api_call("POST", "wallets/group-archive/", payload)
 
     async def unarchive_wallet_group(self, group_names_list: list) -> List[GroupArchiveOrUnarchiveResponse]:
         """Unarchive the specified wallet groups."""
-        payload = json.dumps(
-            [{"group": group_name} for group_name in group_names_list],
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = json.dumps([{"group": group_name} for group_name in group_names_list])
         return await self._api_call("POST", "wallets/group-unarchive/", payload)
 
     async def remove_wallets_from_group(self, group_name: str, wallet_names_list: list) -> List[RemoveWalletFromGroupResponse]:
         """Remove wallets from a group."""
-        payload = json.dumps(
-            [{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list],
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = json.dumps([{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list])
         return await self._api_call("POST", "wallets/remove-wallet-from-group/", payload)
 
     async def get_user_wallets_and_groups_list(self) -> UserWalletsAndGroupsResponse:
         """Return user wallets and groups."""
         return await self._api_call("GET", "users/me/")
 
-    async def transfer_tokens(self, transfer_tokens_requests: List[TransferTokensRequest]) -> List[TransferTokenResponse]:
+    async def transfer_tokens(self, data: TransferTokensRequestContainer) -> List[TransferTokenResponse]:
         """Transfer tokens from one wallet to another."""
-        payload = json.dumps(
-            transfer_tokens_requests,
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = [v.model_dump() for v in data.transfer_tokens_requests]
         return await self._api_call("POST", "transfers/transfer/", payload)
 
-    async def create_dca_order(self, dca_order_requests: List[DCAOrderRequest]) -> List[DCAOrderResponse]:
+    async def create_dca_order(self, data: DCAOrderRequestContainer) -> List[DCAOrderResponse]:
         """Create a DCA order."""
-        payload = json.dumps(
-            dca_order_requests,
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = [v.model_dump() for v in data.dca_order_requests]
         return await self._api_call("POST", "transactions/dca-order/", payload)
 
     async def list_dca_orders(self) -> List[DCAOrderResponse]:
         """List all DCA orders."""
         return await self._api_call("GET", "transactions/dca-order/")
 
-    async def cancel_dca_order(self, cancel_dca_order_requests: List[CancelDCAOrderRequest]) -> List[CancelDCAOrderResponse]:
+    async def cancel_dca_order(self, data: CancelDCAOrderRequestContainer) -> List[CancelDCAOrderResponse]:
         """Cancel a DCA order."""
-        payload = json.dumps(
-            cancel_dca_order_requests,
-            default=lambda o: o.model_dump() if isinstance(o, BaseModel) else o
-        )
+        payload = [v.model_dump() for v in data.cancel_dca_order_requests]
         return await self._api_call("POST", "transactions/dca-order/cancel/", payload)

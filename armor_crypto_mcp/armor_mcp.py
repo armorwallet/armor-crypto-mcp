@@ -7,19 +7,24 @@ import httpx
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP, Context
 
-# Import the ArmorWalletAPIClient and types from your client module.
+# Import the ArmorWalletAPIClient, individual models, and the new container models.
 from .armor_client import (
     ArmorWalletAPIClient,
     WalletTokenPairs,
+    WalletTokenPairsContainer,         # New container for wallet/token pairs
     WalletTokenBalance,
     ConversionRequest,
+    ConversionRequestContainer,        # New container for conversion requests
     ConversionResponse,
     SwapQuoteRequest,
+    SwapQuoteRequestContainer,           # New container for swap quote requests
     SwapQuoteResponse,
     SwapTransactionRequest,
+    SwapTransactionRequestContainer,     # New container for swap transaction requests
     SwapTransactionResponse,
     Wallet,
     TokenDetailsRequest,
+    TokenDetailsRequestContainer,        # New container for token details requests
     TokenDetailsResponse,
     GroupInfo,
     SingleGroupInfo,
@@ -31,10 +36,13 @@ from .armor_client import (
     RemoveWalletFromGroupResponse,
     UserWalletsAndGroupsResponse,
     TransferTokensRequest,
+    TransferTokensRequestContainer,      # New container for transfer tokens requests
     TransferTokenResponse,
     DCAOrderRequest,
+    DCAOrderRequestContainer,            # New container for DCA order requests
     DCAOrderResponse,
     CancelDCAOrderRequest,
+    CancelDCAOrderRequestContainer,      # New container for cancel DCA order requests
     CancelDCAOrderResponse
 )
 
@@ -48,15 +56,15 @@ mcp = FastMCP("Armor Crypto MCP")
 ACCESS_TOKEN = os.getenv('ARMOR_API_KEY') or os.getenv('ARMOR_ACCESS_TOKEN')
 BASE_API_URL = os.getenv('ARMOR_API_URL') or 'https://app.armorwallet.ai/api/v1'
 
-armor_client = ArmorWalletAPIClient(ACCESS_TOKEN, base_api_url=BASE_API_URL)
+armor_client = ArmorWalletAPIClient(ACCESS_TOKEN, base_api_url=BASE_API_URL) #, log_path='armor_client.log')
 
 
 @mcp.tool()
-async def get_wallet_token_balance(wallet_token_pairs: List[WalletTokenPairs]) -> List[WalletTokenBalance]:
+async def get_wallet_token_balance(wallet_token_pairs: WalletTokenPairsContainer) -> List[WalletTokenBalance]:
     """
-    Get the balance for a list of wallet/token pairs. The token should be a token address, not a symbol.
+    Get the balance for a list of wallet/token pairs.
     
-    Expects a list of WalletTokenPairs, returns a list of WalletTokenBalance.
+    Expects a WalletTokenPairsContainer, returns a list of WalletTokenBalance.
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
@@ -68,11 +76,11 @@ async def get_wallet_token_balance(wallet_token_pairs: List[WalletTokenPairs]) -
 
 
 @mcp.tool()
-async def conversion_api(conversion_requests: List[ConversionRequest]) -> List[ConversionResponse]:
+async def conversion_api(conversion_requests: ConversionRequestContainer) -> List[ConversionResponse]:
     """
     Perform token conversion.
     
-    Expects a list of ConversionRequest, returns a list of ConversionResponse.
+    Expects a ConversionRequestContainer, returns a list of ConversionResponse.
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
@@ -84,11 +92,11 @@ async def conversion_api(conversion_requests: List[ConversionRequest]) -> List[C
 
 
 @mcp.tool()
-async def swap_quote(swap_quote_requests: List[SwapQuoteRequest]) -> List[SwapQuoteResponse]:
+async def swap_quote(swap_quote_requests: SwapQuoteRequestContainer) -> List[SwapQuoteResponse]:
     """
     Retrieve a swap quote.
     
-    Expects a list of SwapQuoteRequest, returns a list of SwapQuoteResponse.
+    Expects a SwapQuoteRequestContainer, returns a list of SwapQuoteResponse.
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
@@ -100,11 +108,11 @@ async def swap_quote(swap_quote_requests: List[SwapQuoteRequest]) -> List[SwapQu
 
 
 @mcp.tool()
-async def swap_transaction(swap_transaction_requests: List[SwapTransactionRequest]) -> List[SwapTransactionResponse]:
+async def swap_transaction(swap_transaction_requests: SwapTransactionRequestContainer) -> List[SwapTransactionResponse]:
     """
     Execute a swap transaction.
     
-    Expects a list of SwapTransactionRequest, returns a list of SwapTransactionResponse.
+    Expects a SwapTransactionRequestContainer, returns a list of SwapTransactionResponse.
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
@@ -120,7 +128,7 @@ async def get_all_wallets() -> List[Wallet]:
     """
     Retrieve all wallets with balances.
     
-    Returns a list of Wallet.
+    Returns a list of Wallets and asssets
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
@@ -132,11 +140,11 @@ async def get_all_wallets() -> List[Wallet]:
 
 
 @mcp.tool()
-async def get_token_details(token_details_requests: List[TokenDetailsRequest]) -> List[TokenDetailsResponse]:
+async def get_token_details(token_details_requests: TokenDetailsRequestContainer) -> List[TokenDetailsResponse]:
     """
     Retrieve token details.
     
-    Expects a list of TokenDetailsRequest, returns a list of TokenDetailsResponse.
+    Expects a TokenDetailsRequestContainer, returns a list of TokenDetailsResponse.
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
@@ -324,27 +332,29 @@ async def get_user_wallets_and_groups_list() -> UserWalletsAndGroupsResponse:
 
 
 @mcp.tool()
-async def transfer_tokens(transfer_tokens_requests: List[TransferTokensRequest]) -> List[TransferTokenResponse]:
+async def transfer_tokens(transfer_tokens_requests: TransferTokensRequestContainer) -> List[TransferTokenResponse]:
     """
     Transfer tokens from one wallet to another.
     
-    Expects a list of TransferTokensRequest, returns a list of TransferTokenResponse.
+    Expects a TransferTokensRequestContainer, returns a list of TransferTokenResponse.
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
+        armor_client.logger.debug("Trying")
         result: List[TransferTokenResponse] = await armor_client.transfer_tokens(transfer_tokens_requests)
+        armor_client.logger.debug("We made it!")
         return result
     except Exception as e:
         return [{"error": str(e)}]
 
 
 @mcp.tool()
-async def create_dca_order(dca_order_requests: List[DCAOrderRequest]) -> List[DCAOrderResponse]:
+async def create_dca_order(dca_order_requests: DCAOrderRequestContainer) -> List[DCAOrderResponse]:
     """
     Create a DCA order.
     
-    Expects a list of DCAOrderRequest, returns a list of DCAOrderResponse.
+    Expects a DCAOrderRequestContainer, returns a list of DCAOrderResponse.
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
@@ -372,11 +382,11 @@ async def list_dca_orders() -> List[DCAOrderResponse]:
 
 
 @mcp.tool()
-async def cancel_dca_order(cancel_dca_order_requests: List[CancelDCAOrderRequest]) -> List[CancelDCAOrderResponse]:
+async def cancel_dca_order(cancel_dca_order_requests: CancelDCAOrderRequestContainer) -> List[CancelDCAOrderResponse]:
     """
     Cancel a DCA order.
     
-    Expects a list of CancelDCAOrderRequest, returns a list of CancelDCAOrderResponse.
+    Expects a CancelDCAOrderRequestContainer, returns a list of CancelDCAOrderResponse.
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
