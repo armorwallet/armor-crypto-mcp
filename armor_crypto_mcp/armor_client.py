@@ -9,7 +9,7 @@ load_dotenv()
 BASE_API_URL = os.getenv("BASE_API_URL")
 
 # ------------------------------
-# BaseModel Definitions (unchanged)
+# BaseModel Definitions
 # ------------------------------
 
 class WalletTokenPairs(BaseModel):
@@ -37,9 +37,9 @@ class ConversionResponse(BaseModel):
 
 
 class SwapQuoteRequest(BaseModel):
-    from_wallet: str = Field(description="wallet name")
-    input_token: str = Field(description="public address of input token")
-    output_token: str = Field(description="public address of output token")
+    from_wallet: str = Field(description="The name of the wallet that input_token is in.")
+    input_token: str = Field(description="public mint address of input token. To get the address from a token symbol use `get_token_details`")
+    output_token: str = Field(description="public mint address of output token. To get the address from a token symbol use `get_token_details`")
     input_amount: float = Field(description="input amount to swap")
 
 
@@ -52,7 +52,7 @@ class SwapQuoteResponse(BaseModel):
     output_token_address: str = Field(description="public address of the output token")
     input_amount: float = Field(description="input amount in input token")
     output_amount: float = Field(description="output amount in output token")
-    slippage: float = Field(description="slippage percentage")
+    slippage: float = Field(description="slippage percentage. To estimate slippage based on liquidity see `get_token_details` for the input_token_symbol.")
 
 
 class SwapTransactionRequest(BaseModel):
@@ -410,10 +410,6 @@ class ArmorWalletAPIClient:
         """Remove wallets from a group."""
         payload = json.dumps([{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list])
         return await self._api_call("POST", "wallets/remove-wallet-from-group/", payload)
-
-    async def get_user_wallets_and_groups_list(self) -> UserWalletsAndGroupsResponse:
-        """Return user wallets and groups."""
-        return await self._api_call("GET", "users/me/")
 
     async def transfer_tokens(self, data: TransferTokensRequestContainer) -> List[TransferTokenResponse]:
         """Transfer tokens from one wallet to another."""
