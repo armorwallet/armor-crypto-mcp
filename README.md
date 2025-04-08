@@ -40,11 +40,25 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
 <br />
 <br />
 <br />
-# Installation
+
+# Requirements
+
+### 1. Make sure you have python installed
+<br />
+
+## 2. Install `uv`
+*Linux / Windows*
 ```text
-pip install armor-cryptp-mcp
+pip install uv
 ```
 <br />
+*Mac*
+```text
+brew install uv
+```
+<br />
+
+## 3. Claude Desktop or your AI Agent will run the MCP once configured [see Usage & Configuration]
 <br />
 <br />
 <br />
@@ -60,25 +74,20 @@ We are currently in pre-alpha, and we are testing the capabilities of various ag
     - Grouping & Organization
     - Archiving
 - Swap & Trades
+    - Normal swap
     - DCA
     - Limit Orders
 - Supports Solana blockchain
 
 ## Coming Soon
-- Staking
-- Armor Agents as a Tool
 - More Blockchain Support
+- Staking
+- Minting
+- Armor Agents as a Tool
 
 ## MCP Setup
 Currently you need to have the Armor NFT to get an API Key.
 Get it [here](https://codex.armorwallet.ai/)
-
-## Installation
-1. Make sure you have python installed
-2. Install uv:
-   - For Mac: Run `brew install uv` in terminal
-   - For Linux/Windows: Run `pip install uv` in terminal (command line interpreter)
-3. Your agent software (Claude, etc.) will handle execution of the MCP server
 
 ## Usage & Configuration
 To use the Armor MCP with your agent, you need the following configuration:
@@ -102,7 +111,7 @@ To use the Armor MCP with your agent, you need the following configuration:
 <br />
 <br />
 
-# Installation in Claude Desktop
+# Use in Claude Desktop
 1. Must have Developer Mode enabled
 2. Open Claude Desktop's File Menu top left of the window.
 3. Go to File > Settings
@@ -111,10 +120,14 @@ To use the Armor MCP with your agent, you need the following configuration:
 6. Make sure to replace the placeholder with your API key
 7. Save the file and start a new Chat in Claude Desktop
 
-## Installation in Cline
-Coming soon
+## Use in Cline
+1. Click on the `MCP Servers` button in the Cline tab in VSCode on the left panel
+2. Scroll to the bottom of the left panel and click on `Configure MCP Servers`
+3. In the config file, insert `armor-wallet-mcp` section from above
+4. Make sure to replace the placeholder with your API key
+5. Save the file, click `Done` under the `MCP Servers` tab and start chatting with Cline
 
-## Installation for n8n
+## Use in n8n
 1. Open the n8n app
 2. Bottom-left of screen click `...` next to your username and click `Settings`
 3. On the left panel, click `Community nodes` and then `Install a Community Node` button
