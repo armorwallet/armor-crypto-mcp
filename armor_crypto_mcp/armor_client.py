@@ -373,42 +373,42 @@ class ArmorWalletAPIClient:
 
     async def create_wallet(self, wallet_names_list: list) -> List[WalletInfo]:
         """Create new wallets given a list of wallet names."""
-        payload = json.dumps([{"name": wallet_name} for wallet_name in wallet_names_list])
+        payload = [{"name": wallet_name} for wallet_name in wallet_names_list]
         return await self._api_call("POST", "wallets/", payload)
 
     async def archive_wallets(self, wallet_names_list: list) -> List[WalletArchiveOrUnarchiveResponse]:
         """Archive the wallets specified in the list."""
-        payload = json.dumps([{"wallet": wallet_name} for wallet_name in wallet_names_list])
+        payload = [{"wallet": wallet_name} for wallet_name in wallet_names_list]
         return await self._api_call("POST", "wallets/archive/", payload)
 
     async def unarchive_wallets(self, wallet_names_list: list) -> List[WalletArchiveOrUnarchiveResponse]:
         """Unarchive the wallets specified in the list."""
-        payload = json.dumps([{"wallet": wallet_name} for wallet_name in wallet_names_list])
+        payload = [{"wallet": wallet_name} for wallet_name in wallet_names_list]
         return await self._api_call("POST", "wallets/unarchive/", payload)
 
     async def create_groups(self, group_names_list: list) -> List[CreateGroupResponse]:
         """Create new wallet groups given a list of group names."""
-        payload = json.dumps([{"name": group_name} for group_name in group_names_list])
+        payload = [{"name": group_name} for group_name in group_names_list]
         return await self._api_call("POST", "wallets/groups/", payload)
 
     async def add_wallets_to_group(self, group_name: str, wallet_names_list: list) -> List[AddWalletToGroupResponse]:
         """Add wallets to a specific group."""
-        payload = json.dumps([{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list])
+        payload = [{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list]
         return await self._api_call("POST", "wallets/add-wallet-to-group/", payload)
 
     async def archive_wallet_group(self, group_names_list: list) -> List[GroupArchiveOrUnarchiveResponse]:
         """Archive the specified wallet groups."""
-        payload = json.dumps([{"group": group_name} for group_name in group_names_list])
+        payload = [{"group": group_name} for group_name in group_names_list]
         return await self._api_call("POST", "wallets/group-archive/", payload)
 
     async def unarchive_wallet_group(self, group_names_list: list) -> List[GroupArchiveOrUnarchiveResponse]:
         """Unarchive the specified wallet groups."""
-        payload = json.dumps([{"group": group_name} for group_name in group_names_list])
+        payload = [{"group": group_name} for group_name in group_names_list]
         return await self._api_call("POST", "wallets/group-unarchive/", payload)
 
     async def remove_wallets_from_group(self, group_name: str, wallet_names_list: list) -> List[RemoveWalletFromGroupResponse]:
         """Remove wallets from a group."""
-        payload = json.dumps([{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list])
+        payload = [{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list]
         return await self._api_call("POST", "wallets/remove-wallet-from-group/", payload)
 
     async def transfer_tokens(self, data: TransferTokensRequestContainer) -> List[TransferTokenResponse]:
