@@ -59,7 +59,8 @@ brew install uv
 ```
 <br />
 
-### 3. Claude Desktop or your AI Agent will run the MCP once configured [see Usage & Configuration]
+### 3. Claude Desktop or your AI Agent will run the MCP
+See [Usage & Configuration](#usage--configuration) for details.
 <br />
 <br />
 <br />
