@@ -298,7 +298,7 @@ class ArmorWalletAPIClient:
         """
         url = f"{self.base_api_url}/{endpoint}"
         payload = json.dumps(payload)
-        if self.logger:
+        if self.logger is not None:
             self.logger.debug(f"Request: {method} {url} Payload: {payload}")
         headers = {
             'Content-Type': 'application/json',
@@ -308,21 +308,21 @@ class ArmorWalletAPIClient:
             async with httpx.AsyncClient(timeout=30) as client:
                 response = await client.request(method, url, headers=headers, data=payload, follow_redirects=False)
                 
-                if self.logger:
+                if self.logger is not None:
                     self.logger.debug(f"Response status: {response.status_code} Response: {response.text}")
             if response.status_code >= 400:
-                if self.logger:
+                if self.logger is not None:
                     self.logger.error(f"API Error {response.status_code}: {response.text}")
                 raise Exception(f"API Error {response.status_code}: {response.text}")
             try:
                 return response.json()
             except Exception:
-                if self.logger:
+                if self.logger is not None:
                     self.logger.error(f"JSON Parsing: {response.text}")
                 return {"text": response.text}
         except Exception as e:
             traceback.print_exc()
-            if self.logger:
+            if self.logger is not None:
                 self.logger.error(f"{e}")
             return {"text": str(e)}
 
