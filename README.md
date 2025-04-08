@@ -48,12 +48,13 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
 
 ### 2. Install `uv`
 *Linux / Windows*
-```text
+
+```sh
 pip install uv
 ```
-<br />
 *Mac*
-```text
+
+```sh
 brew install uv
 ```
 <br />
