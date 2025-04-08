@@ -331,9 +331,7 @@ async def transfer_tokens(transfer_tokens_requests: TransferTokensRequestContain
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        armor_client.logger.debug("Trying")
         result: List[TransferTokenResponse] = await armor_client.transfer_tokens(transfer_tokens_requests)
-        armor_client.logger.debug("We made it!")
         return result
     except Exception as e:
         return [{"error": str(e)}]
