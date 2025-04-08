@@ -46,7 +46,7 @@ A single source for interating AI Agents with the Crypto ecosystem. This include
 ### 1. Make sure you have python installed
 <br />
 
-## 2. Install `uv`
+### 2. Install `uv`
 *Linux / Windows*
 ```text
 pip install uv
@@ -58,7 +58,7 @@ brew install uv
 ```
 <br />
 
-## 3. Claude Desktop or your AI Agent will run the MCP once configured [see Usage & Configuration]
+### 3. Claude Desktop or your AI Agent will run the MCP once configured [see Usage & Configuration]
 <br />
 <br />
 <br />
