@@ -199,10 +199,11 @@ class DCAOrderRequest(BaseModel):
     delta_type: Literal["INCREASE", "DECREASE", "MOVE", "MOVE_DAILY", "AVERAGE_MOVE"] = Field(description="type of the delta")
     delta_percentage: float = Field(description="percentage of the delta")
     time_zone: str = Field(description="user's time zone")
+    execution_type: Literal["MULTIPLE", "SINGLE"] = Field(description="type of DCA order execution - whether to execute once (SINGLE) or multiple times (MULTIPLE)")
 
 
 class DCAWatcher(BaseModel):
-    watch_field: str = Field(description="field to watch for the DCA order")
+    watch_field: Literal["liquidity", "marketCap", "price"] = Field(description="field to watch for the DCA order")
     delta_type: Literal["INCREASE", "DECREASE", "MOVE", "MOVE_DAILY", "AVERAGE_MOVE"] = Field(description="type of the delta")
     initial_value: float = Field(description="initial value of the delta")
     delta_percentage: float = Field(description="percentage of the delta")
