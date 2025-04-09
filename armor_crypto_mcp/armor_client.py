@@ -9,7 +9,7 @@ load_dotenv()
 BASE_API_URL = os.getenv("BASE_API_URL")
 
 # ------------------------------
-# BaseModel Definitions (unchanged)
+# BaseModel Definitions
 # ------------------------------
 
 class WalletTokenPairs(BaseModel):
@@ -37,9 +37,9 @@ class ConversionResponse(BaseModel):
 
 
 class SwapQuoteRequest(BaseModel):
-    from_wallet: str = Field(description="wallet name")
-    input_token: str = Field(description="public address of input token")
-    output_token: str = Field(description="public address of output token")
+    from_wallet: str = Field(description="The name of the wallet that input_token is in.")
+    input_token: str = Field(description="public mint address of input token. To get the address from a token symbol use `get_token_details`")
+    output_token: str = Field(description="public mint address of output token. To get the address from a token symbol use `get_token_details`")
     input_amount: float = Field(description="input amount to swap")
 
 
@@ -52,7 +52,7 @@ class SwapQuoteResponse(BaseModel):
     output_token_address: str = Field(description="public address of the output token")
     input_amount: float = Field(description="input amount in input token")
     output_amount: float = Field(description="output amount in output token")
-    slippage: float = Field(description="slippage percentage")
+    slippage: float = Field(description="slippage percentage. To estimate slippage based on liquidity see `get_token_details` for the input_token_symbol.")
 
 
 class SwapTransactionRequest(BaseModel):
@@ -190,8 +190,8 @@ class DCAOrderRequest(BaseModel):
     wallet: str = Field(description="name of the wallet")
     input_token: str = Field(description="public address of the input token. To get the address from a token symbol use `get_token_details`")
     output_token: str = Field(description="public address of the output token. To get the address from a token symbol use `get_token_details`")
-    amount: float = Field(description="amount of tokens to invest")
-    cron_expression: str = Field(description="cron expression for the DCA order")
+    amount: float = Field(description="amount of input token to invest")
+    cron_expression: str = Field(description="cron expression for the DCA worker execution frequency")
     strategy_duration: int = Field(description="duration of the DCA order")
     strategy_duration_unit: Literal["MINUTE", "HOUR", "DAY", "WEEK", "MONTH", "YEAR"] = Field(description="unit of the duration of the DCA order")
     watch_field: str = Field(description="field to watch for the DCA order")
@@ -353,7 +353,7 @@ class ArmorWalletAPIClient:
         """
         url = f"{self.base_api_url}/{endpoint}"
         payload = json.dumps(payload)
-        if self.logger:
+        if self.logger is not None:
             self.logger.debug(f"Request: {method} {url} Payload: {payload}")
         headers = {
             'Content-Type': 'application/json',
@@ -363,21 +363,21 @@ class ArmorWalletAPIClient:
             async with httpx.AsyncClient(timeout=30) as client:
                 response = await client.request(method, url, headers=headers, data=payload, follow_redirects=False)
                 
-                if self.logger:
+                if self.logger is not None:
                     self.logger.debug(f"Response status: {response.status_code} Response: {response.text}")
             if response.status_code >= 400:
-                if self.logger:
+                if self.logger is not None:
                     self.logger.error(f"API Error {response.status_code}: {response.text}")
                 raise Exception(f"API Error {response.status_code}: {response.text}")
             try:
                 return response.json()
             except Exception:
-                if self.logger:
+                if self.logger is not None:
                     self.logger.error(f"JSON Parsing: {response.text}")
                 return {"text": response.text}
         except Exception as e:
             traceback.print_exc()
-            if self.logger:
+            if self.logger is not None:
                 self.logger.error(f"{e}")
             return {"text": str(e)}
 
@@ -481,10 +481,6 @@ class ArmorWalletAPIClient:
         # payload = json.dumps([{"wallet": wallet_name, "group": data.group_name} for wallet_name in data.wallet_names])
         payload = data.model_dump()['remove_wallets_from_group_requests']
         return await self._api_call("POST", "wallets/remove-wallet-from-group/", payload)
-
-    async def get_user_wallets_and_groups_list(self) -> UserWalletsAndGroupsResponse:
-        """Return user wallets and groups."""
-        return await self._api_call("GET", "users/me/")
 
     async def transfer_tokens(self, data: TransferTokensRequestContainer) -> List[TransferTokenResponse]:
         """Transfer tokens from one wallet to another."""

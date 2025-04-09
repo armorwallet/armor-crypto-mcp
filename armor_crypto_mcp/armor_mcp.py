@@ -80,6 +80,12 @@ BASE_API_URL = os.getenv('ARMOR_API_URL') or 'https://app.armorwallet.ai/api/v1'
 
 armor_client = ArmorWalletAPIClient(ACCESS_TOKEN, base_api_url=BASE_API_URL) #, log_path='armor_client.log')
 
+# Include version endpoint
+from armor_crypto_mcp import __version__
+@mcp.tool()
+async def get_armor_mcp_version():
+    # return  __version__
+    return {'armor_version': __version__}
 
 @mcp.tool()
 async def get_wallet_token_balance(wallet_token_pairs: WalletTokenPairsContainer) -> List[WalletTokenBalance]:
@@ -145,7 +151,7 @@ async def swap_transaction(swap_transaction_requests: SwapTransactionRequestCont
         return [{"error": str(e)}]
 
 
-@mcp.resource("wallets://all")
+@mcp.tool()
 async def get_all_wallets() -> List[Wallet]:
     """
     Retrieve all wallets with balances.
@@ -338,22 +344,6 @@ async def remove_wallets_from_group(remove_wallets_from_group_requests: RemoveWa
 
 
 @mcp.tool()
-async def get_user_wallets_and_groups_list() -> UserWalletsAndGroupsResponse:
-    """
-    Retrieve the list of user wallets and wallet groups.
-    
-    Returns UserWalletsAndGroupsResponse.
-    """
-    if not armor_client:
-        return {"error": "Not logged in"}
-    try:
-        result: UserWalletsAndGroupsResponse = await armor_client.get_user_wallets_and_groups_list()
-        return result
-    except Exception as e:
-        return {"error": str(e)}
-
-
-@mcp.tool()
 async def transfer_tokens(transfer_tokens_requests: TransferTokensRequestContainer) -> List[TransferTokenResponse]:
     """
     Transfer tokens from one wallet to another.
@@ -363,9 +353,7 @@ async def transfer_tokens(transfer_tokens_requests: TransferTokensRequestContain
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        armor_client.logger.debug("Trying")
         result: List[TransferTokenResponse] = await armor_client.transfer_tokens(transfer_tokens_requests)
-        armor_client.logger.debug("We made it!")
         return result
     except Exception as e:
         return [{"error": str(e)}]
