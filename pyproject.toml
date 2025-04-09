@@ -1,6 +1,6 @@
 [project]
 name = "armor-crypto-mcp"
-version = "0.1.16"
+version = "0.1.17"
 description = "MCP to interface with multiple blockchains, staking, DeFi, swap, bridging, wallet management, DCA, Limit Orders, Coin Lookup, Tracking and more"
 readme = "README.md"
 requires-python = ">=3.11"
