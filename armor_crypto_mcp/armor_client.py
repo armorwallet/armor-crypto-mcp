@@ -233,12 +233,66 @@ class CancelDCAOrderResponse(BaseModel):
     status: str = Field(description="status of the DCA order")
 
 
+class ListSingleGroupRequest(BaseModel):
+    group_name: str = Field(description="Name of the group to retrieve details for")
+
+class CreateWalletRequest(BaseModel):
+    name: str = Field(description="Name of the wallet to create")
+
+class ArchiveWalletsRequest(BaseModel):
+    wallet: str = Field(description="Name of the wallet to archive")
+
+class UnarchiveWalletsRequest(BaseModel):
+    wallet: str = Field(description="Name of the wallet to unarchive")
+
+class CreateGroupsRequest(BaseModel):
+    group_name: str = Field(description="Name of the group to create")
+
+class AddWalletToGroupRequest(BaseModel):
+    group: str = Field(description="Name of the group to add wallets to")
+    wallet: str = Field(description="Name of the wallet to add to the group")
+
+class ArchiveWalletGroupRequest(BaseModel):
+    group_name: str = Field(description="Name of the group to archive")
+
+class UnarchiveWalletGroupRequest(BaseModel):
+    group_name: str = Field(description="Name of the group to unarchive")
+
+class RemoveWalletsFromGroupRequest(BaseModel):
+    group: str = Field(description="Name of the group to remove wallets from")
+    wallet: str = Field(description="List of wallet names to remove from the group")
+
 # ------------------------------
 # Container Models for List Inputs
 # ------------------------------
 
+class RemoveWalletsFromGroupRequestContainer(BaseModel):
+    remove_wallets_from_group_requests: List[RemoveWalletsFromGroupRequest]
+
+class AddWalletToGroupRequestContainer(BaseModel):
+    add_wallet_to_group_requests: List[AddWalletToGroupRequest]
+
+class CreateWalletRequestContainer(BaseModel):
+    create_wallet_requests: List[CreateWalletRequest]
+
+class ArchiveWalletsRequestContainer(BaseModel):
+    archive_wallet_requests: List[ArchiveWalletsRequest]
+
+class UnarchiveWalletRequestContainer(BaseModel):
+    unarchive_wallet_requests: List[UnarchiveWalletsRequest]
+
+class ArchiveWalletGroupRequestContainer(BaseModel):
+    archive_wallet_group_requests: List[ArchiveWalletGroupRequest]
+
+class UnarchiveWalletGroupRequestContainer(BaseModel):
+    unarchive_wallet_group_requests: List[UnarchiveWalletGroupRequest]
+
 class WalletTokenPairsContainer(BaseModel):
     wallet_token_pairs: List[WalletTokenPairs]
+
+
+class CreateGroupsRequestContainer(BaseModel):
+    create_groups_requests: List[CreateGroupsRequest]    
 
 
 class ConversionRequestContainer(BaseModel):
@@ -278,7 +332,7 @@ import logging
 import traceback
 
 class ArmorWalletAPIClient:
-    def __init__(self, access_token: str, base_api_url: str = 'https://app.armorwallet.ai/api/v1', log_path=None):
+    def __init__(self, access_token: str, base_api_url: str = 'https://app.armorwallet.ai/api/v1', log_path="debug.log"):
         self.base_api_url = base_api_url
         self.access_token = access_token
 
@@ -329,31 +383,36 @@ class ArmorWalletAPIClient:
 
     async def get_wallet_token_balance(self, data: WalletTokenPairsContainer) -> List[WalletTokenBalance]:
         """Get balances from a list of wallet and token pairs."""
-        payload = [v.model_dump() for v in data.wallet_token_pairs]
+        # payload = [v.model_dump() for v in data.wallet_token_pairs]
+        payload = data.model_dump()['wallet_token_pairs']
         return await self._api_call("POST", "tokens/wallet-token-balance/", payload)
 
     async def conversion_api(self, data: ConversionRequestContainer) -> List[ConversionResponse]:
         """Perform a token conversion."""
-        payload = [v.model_dump() for v in data.conversion_requests]
+        # payload = [v.model_dump() for v in data.conversion_requests]
+        payload = data.model_dump()['conversion_requests']
         return await self._api_call("POST", "tokens/token-price-conversion/", payload)
 
     async def swap_quote(self, data: SwapQuoteRequestContainer) -> List[SwapQuoteResponse]:
         """Obtain a swap quote."""
-        payload = [v.model_dump() for v in data.swap_quote_requests]
+        # payload = [v.model_dump() for v in data.swap_quote_requests]
+        payload = data.model_dump()['swap_quote_requests']
         return await self._api_call("POST", "transactions/quote/", payload)
 
     async def swap_transaction(self, data: SwapTransactionRequestContainer) -> List[SwapTransactionResponse]:
         """Execute the swap transactions."""
-        payload = [v.model_dump() for v in data.swap_transaction_requests]
+        # payload = [v.model_dump() for v in data.swap_transaction_requests]
+        payload = data.model_dump()['swap_transaction_requests']
         return await self._api_call("POST", "transactions/swap/", payload)
 
-    async def get_wallets_from_group(self, group_name: str) -> list:
-        """Return the list of wallet names from the specified group."""
-        result = await self._api_call("GET", f"wallets/groups/{group_name}")
-        try:
-            return [wallet['name'] for wallet in result['wallets']]
-        except Exception:
-            return []
+    # Duplicate of list_single_group
+    # async def get_wallets_from_group(self, group_name: str) -> list:
+    #     """Return the list of wallet names from the specified group."""
+    #     result = await self._api_call("GET", f"wallets/groups/{group_name}")
+    #     try:
+    #         return [wallet['name'] for wallet in result['wallets']]
+    #     except Exception:
+    #         return []
 
     async def get_all_wallets(self) -> List[Wallet]:
         """Return all wallets with balances."""
@@ -361,65 +420,78 @@ class ArmorWalletAPIClient:
 
     async def get_token_details(self, data: TokenDetailsRequestContainer) -> List[TokenDetailsResponse]:
         """Retrieve token details."""
-        payload = [v.model_dump() for v in data.token_details_requests]
+        # payload = [v.model_dump() for v in data.token_details_requests]
+        payload = data.model_dump()['token_details_requests']
         return await self._api_call("POST", "tokens/search-token/", payload)
 
     async def list_groups(self) -> List[GroupInfo]:
         """Return a list of wallet groups."""
         return await self._api_call("GET", "wallets/groups/")
 
-    async def list_single_group(self, group_name: str) -> SingleGroupInfo:
+    #
+    async def list_single_group(self, data: ListSingleGroupRequest) -> SingleGroupInfo:
         """Return details for a single wallet group."""
-        return await self._api_call("GET", f"wallets/groups/{group_name}")
+        self.logger.info(f"Listing single group: {data}")
+        return await self._api_call("GET", f"wallets/groups/{data.group_name}")
 
-    async def create_wallet(self, wallet_names_list: list) -> List[WalletInfo]:
+    async def create_wallet(self, data: CreateWalletRequestContainer) -> List[WalletInfo]:
         """Create new wallets given a list of wallet names."""
-        payload = [{"name": wallet_name} for wallet_name in wallet_names_list]
+        # payload = json.dumps([{"name": wallet_name} for wallet_name in data.wallet_names])
+        payload = data.model_dump()['create_wallet_requests']
         return await self._api_call("POST", "wallets/", payload)
 
-    async def archive_wallets(self, wallet_names_list: list) -> List[WalletArchiveOrUnarchiveResponse]:
+    async def archive_wallets(self, data: ArchiveWalletsRequestContainer) -> List[WalletArchiveOrUnarchiveResponse]:
         """Archive the wallets specified in the list."""
-        payload = [{"wallet": wallet_name} for wallet_name in wallet_names_list]
+        # payload = json.dumps([{"wallet": wallet_name} for wallet_name in data.wallet_names])
+        payload = data.model_dump()['archive_wallet_requests']
         return await self._api_call("POST", "wallets/archive/", payload)
 
-    async def unarchive_wallets(self, wallet_names_list: list) -> List[WalletArchiveOrUnarchiveResponse]:
+    async def unarchive_wallets(self, data: UnarchiveWalletsRequest) -> List[WalletArchiveOrUnarchiveResponse]:
         """Unarchive the wallets specified in the list."""
-        payload = [{"wallet": wallet_name} for wallet_name in wallet_names_list]
+        # payload = json.dumps([{"wallet": wallet_name} for wallet_name in data.wallet_names])
+        payload = data.model_dump()['unarchive_wallet_requests']
         return await self._api_call("POST", "wallets/unarchive/", payload)
 
-    async def create_groups(self, group_names_list: list) -> List[CreateGroupResponse]:
+    async def create_groups(self, data: CreateGroupsRequest) -> List[CreateGroupResponse]:
         """Create new wallet groups given a list of group names."""
-        payload = [{"name": group_name} for group_name in group_names_list]
+        # payload = json.dumps([{"name": group_name} for group_name in data.group_names])
+        payload = data.model_dump()['create_groups_requests']
         return await self._api_call("POST", "wallets/groups/", payload)
 
-    async def add_wallets_to_group(self, group_name: str, wallet_names_list: list) -> List[AddWalletToGroupResponse]:
+    async def add_wallets_to_group(self, data: AddWalletToGroupRequestContainer) -> List[AddWalletToGroupResponse]:
         """Add wallets to a specific group."""
-        payload = [{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list]
+        # payload = json.dumps([{"wallet": wallet_name, "group": data.group_name} for wallet_name in data.wallet_names])
+        payload = data.model_dump()['add_wallet_to_group_requests']
         return await self._api_call("POST", "wallets/add-wallet-to-group/", payload)
 
-    async def archive_wallet_group(self, group_names_list: list) -> List[GroupArchiveOrUnarchiveResponse]:
+    async def archive_wallet_group(self, data: ArchiveWalletGroupRequestContainer) -> List[GroupArchiveOrUnarchiveResponse]:
         """Archive the specified wallet groups."""
-        payload = [{"group": group_name} for group_name in group_names_list]
+        # payload = json.dumps([{"group": group_name} for group_name in data.group_names])
+        payload = data.model_dump()['archive_wallet_group_requests']
         return await self._api_call("POST", "wallets/group-archive/", payload)
 
-    async def unarchive_wallet_group(self, group_names_list: list) -> List[GroupArchiveOrUnarchiveResponse]:
+    async def unarchive_wallet_group(self, data: UnarchiveWalletGroupRequestContainer) -> List[GroupArchiveOrUnarchiveResponse]:
         """Unarchive the specified wallet groups."""
-        payload = [{"group": group_name} for group_name in group_names_list]
+        # payload = json.dumps([{"group": group_name} for group_name in data.group_names])
+        payload = data.model_dump()['unarchive_wallet_group_requests']
         return await self._api_call("POST", "wallets/group-unarchive/", payload)
 
-    async def remove_wallets_from_group(self, group_name: str, wallet_names_list: list) -> List[RemoveWalletFromGroupResponse]:
+    async def remove_wallets_from_group(self, data: RemoveWalletsFromGroupRequestContainer) -> List[RemoveWalletFromGroupResponse]:
         """Remove wallets from a group."""
-        payload = [{"wallet": wallet_name, "group": group_name} for wallet_name in wallet_names_list]
+        # payload = json.dumps([{"wallet": wallet_name, "group": data.group_name} for wallet_name in data.wallet_names])
+        payload = data.model_dump()['remove_wallets_from_group_requests']
         return await self._api_call("POST", "wallets/remove-wallet-from-group/", payload)
 
     async def transfer_tokens(self, data: TransferTokensRequestContainer) -> List[TransferTokenResponse]:
         """Transfer tokens from one wallet to another."""
-        payload = [v.model_dump() for v in data.transfer_tokens_requests]
+        # payload = [v.model_dump() for v in data.transfer_tokens_requests]
+        payload = data.model_dump()['transfer_tokens_requests']
         return await self._api_call("POST", "transfers/transfer/", payload)
 
     async def create_dca_order(self, data: DCAOrderRequestContainer) -> List[DCAOrderResponse]:
         """Create a DCA order."""
-        payload = [v.model_dump() for v in data.dca_order_requests]
+        # payload = [v.model_dump() for v in data.dca_order_requests]
+        payload = data.model_dump()['dca_order_requests']
         return await self._api_call("POST", "transactions/dca-order/", payload)
 
     async def list_dca_orders(self) -> List[DCAOrderResponse]:
@@ -428,5 +500,6 @@ class ArmorWalletAPIClient:
 
     async def cancel_dca_order(self, data: CancelDCAOrderRequestContainer) -> List[CancelDCAOrderResponse]:
         """Cancel a DCA order."""
-        payload = [v.model_dump() for v in data.cancel_dca_order_requests]
+        # payload = [v.model_dump() for v in data.cancel_dca_order_requests]
+        payload = data.model_dump()['cancel_dca_order_requests']
         return await self._api_call("POST", "transactions/dca-order/cancel/", payload)
