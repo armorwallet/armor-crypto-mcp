@@ -8,10 +8,10 @@ from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP, Context
 
 # Import the ArmorWalletAPIClient
-from armor_client import ArmorWalletAPIClient
+from .armor_client import ArmorWalletAPIClient
 
 # Import base models
-from armor_client import (
+from .armor_client import (
     WalletTokenPairs,
     WalletTokenBalance,
     ConversionRequest,
@@ -49,7 +49,7 @@ from armor_client import (
 )
 
 # Import container models
-from armor_client import (
+from .armor_client import (
     WalletTokenPairsContainer,
     ConversionRequestContainer,
     SwapQuoteRequestContainer,
