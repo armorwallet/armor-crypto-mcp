@@ -69,7 +69,7 @@ class SwapTransactionResponse(BaseModel):
 
 
 class WalletBalance(BaseModel):
-    mint_address: str = Field(description="mint address of the token")
+    mint_address: str = Field(description="public mint address of output token. To get the address from a token symbol use `get_token_details`")
     name: str = Field(description="name of the token")
     symbol: str = Field(description="symbol of the token")
     decimals: int = Field(description="number of decimals of the token")
@@ -190,16 +190,16 @@ class DCAOrderRequest(BaseModel):
     wallet: str = Field(description="name of the wallet")
     input_token: str = Field(description="public address of the input token. To get the address from a token symbol use `get_token_details`")
     output_token: str = Field(description="public address of the output token. To get the address from a token symbol use `get_token_details`")
-    amount: float = Field(description="amount of input token to invest")
+    amount: float = Field(description="total amount of input token to invest")
     cron_expression: str = Field(description="cron expression for the DCA worker execution frequency")
-    strategy_duration: int = Field(description="duration of the DCA order")
     strategy_duration_unit: Literal["MINUTE", "HOUR", "DAY", "WEEK", "MONTH", "YEAR"] = Field(description="unit of the duration of the DCA order")
-    watch_field: str = Field(description="field to watch for the DCA order")
-    token_watcher: str = Field(description="name of the token watcher")
-    delta_type: Literal["INCREASE", "DECREASE", "MOVE", "MOVE_DAILY", "AVERAGE_MOVE"] = Field(description="type of the delta")
-    delta_percentage: float = Field(description="percentage of the delta")
-    time_zone: str = Field(description="user's time zone")
-    execution_type: Literal["MULTIPLE", "SINGLE"] = Field(description="type of DCA order execution - whether to execute once (SINGLE) or multiple times (MULTIPLE)")
+    strategy_duration: int = Field(description="Total running time of the DCA order given in strategy duration units, should be more than 0")
+    execution_type: Literal["MULTIPLE", "SINGLE"] = Field(description="set to SINGLE only if the user is asking for a single scheduled order, MULTIPLE if it is a true DCA")
+    token_address_watcher: Optional[str] = Field(description="If the DCA is conditional, public address of the token to watch.")
+    watch_field: Optional[Literal["liquidity", "marketCap", "price"]] = Field(description="If the DCA is conditional, field to watch for the condition")
+    delta_type: Optional[Literal["INCREASE", "DECREASE", "MOVE", "MOVE_DAILY", "AVERAGE_MOVE"]] = Field(description="If the DCA is conditional, the operator of the watch field in the conditional statement")
+    delta_percentage: Optional[float] = Field(description="If the DCA is conditional, percentage of the change to watch for given the delta_type")
+    time_zone: Optional[str] = Field(description="user's time zone. Defaults to UTC")
 
 
 class DCAWatcher(BaseModel):
@@ -246,7 +246,7 @@ class UnarchiveWalletsRequest(BaseModel):
     wallet: str = Field(description="Name of the wallet to unarchive")
 
 class CreateGroupsRequest(BaseModel):
-    group_name: str = Field(description="Name of the group to create")
+    name: str = Field(description="Name of the group to create")
 
 class AddWalletToGroupRequest(BaseModel):
     group: str = Field(description="Name of the group to add wallets to")
@@ -384,25 +384,25 @@ class ArmorWalletAPIClient:
     async def get_wallet_token_balance(self, data: WalletTokenPairsContainer) -> List[WalletTokenBalance]:
         """Get balances from a list of wallet and token pairs."""
         # payload = [v.model_dump() for v in data.wallet_token_pairs]
-        payload = data.model_dump()['wallet_token_pairs']
+        payload = data.model_dump(exclude_none=True)['wallet_token_pairs']
         return await self._api_call("POST", "tokens/wallet-token-balance/", payload)
 
     async def conversion_api(self, data: ConversionRequestContainer) -> List[ConversionResponse]:
         """Perform a token conversion."""
         # payload = [v.model_dump() for v in data.conversion_requests]
-        payload = data.model_dump()['conversion_requests']
+        payload = data.model_dump(exclude_none=True)['conversion_requests']
         return await self._api_call("POST", "tokens/token-price-conversion/", payload)
 
     async def swap_quote(self, data: SwapQuoteRequestContainer) -> List[SwapQuoteResponse]:
         """Obtain a swap quote."""
         # payload = [v.model_dump() for v in data.swap_quote_requests]
-        payload = data.model_dump()['swap_quote_requests']
+        payload = data.model_dump(exclude_none=True)['swap_quote_requests']
         return await self._api_call("POST", "transactions/quote/", payload)
 
     async def swap_transaction(self, data: SwapTransactionRequestContainer) -> List[SwapTransactionResponse]:
         """Execute the swap transactions."""
         # payload = [v.model_dump() for v in data.swap_transaction_requests]
-        payload = data.model_dump()['swap_transaction_requests']
+        payload = data.model_dump(exclude_none=True)['swap_transaction_requests']
         return await self._api_call("POST", "transactions/swap/", payload)
 
     # Duplicate of list_single_group
@@ -421,7 +421,7 @@ class ArmorWalletAPIClient:
     async def get_token_details(self, data: TokenDetailsRequestContainer) -> List[TokenDetailsResponse]:
         """Retrieve token details."""
         # payload = [v.model_dump() for v in data.token_details_requests]
-        payload = data.model_dump()['token_details_requests']
+        payload = data.model_dump(exclude_none=True)['token_details_requests']
         return await self._api_call("POST", "tokens/search-token/", payload)
 
     async def list_groups(self) -> List[GroupInfo]:
@@ -432,66 +432,66 @@ class ArmorWalletAPIClient:
     async def list_single_group(self, data: ListSingleGroupRequest) -> SingleGroupInfo:
         """Return details for a single wallet group."""
         self.logger.info(f"Listing single group: {data}")
-        return await self._api_call("GET", f"wallets/groups/{data.group_name}")
+        return await self._api_call("GET", f"wallets/groups/{data.group_name}/")
 
     async def create_wallet(self, data: CreateWalletRequestContainer) -> List[WalletInfo]:
         """Create new wallets given a list of wallet names."""
         # payload = json.dumps([{"name": wallet_name} for wallet_name in data.wallet_names])
-        payload = data.model_dump()['create_wallet_requests']
+        payload = data.model_dump(exclude_none=True)['create_wallet_requests']
         return await self._api_call("POST", "wallets/", payload)
 
     async def archive_wallets(self, data: ArchiveWalletsRequestContainer) -> List[WalletArchiveOrUnarchiveResponse]:
         """Archive the wallets specified in the list."""
         # payload = json.dumps([{"wallet": wallet_name} for wallet_name in data.wallet_names])
-        payload = data.model_dump()['archive_wallet_requests']
+        payload = data.model_dump(exclude_none=True)['archive_wallet_requests']
         return await self._api_call("POST", "wallets/archive/", payload)
 
     async def unarchive_wallets(self, data: UnarchiveWalletsRequest) -> List[WalletArchiveOrUnarchiveResponse]:
         """Unarchive the wallets specified in the list."""
         # payload = json.dumps([{"wallet": wallet_name} for wallet_name in data.wallet_names])
-        payload = data.model_dump()['unarchive_wallet_requests']
+        payload = data.model_dump(exclude_none=True)['unarchive_wallet_requests']
         return await self._api_call("POST", "wallets/unarchive/", payload)
 
     async def create_groups(self, data: CreateGroupsRequest) -> List[CreateGroupResponse]:
         """Create new wallet groups given a list of group names."""
         # payload = json.dumps([{"name": group_name} for group_name in data.group_names])
-        payload = data.model_dump()['create_groups_requests']
+        payload = data.model_dump(exclude_none=True)['create_groups_requests']
         return await self._api_call("POST", "wallets/groups/", payload)
 
     async def add_wallets_to_group(self, data: AddWalletToGroupRequestContainer) -> List[AddWalletToGroupResponse]:
         """Add wallets to a specific group."""
         # payload = json.dumps([{"wallet": wallet_name, "group": data.group_name} for wallet_name in data.wallet_names])
-        payload = data.model_dump()['add_wallet_to_group_requests']
+        payload = data.model_dump(exclude_none=True)['add_wallet_to_group_requests']
         return await self._api_call("POST", "wallets/add-wallet-to-group/", payload)
 
     async def archive_wallet_group(self, data: ArchiveWalletGroupRequestContainer) -> List[GroupArchiveOrUnarchiveResponse]:
         """Archive the specified wallet groups."""
         # payload = json.dumps([{"group": group_name} for group_name in data.group_names])
-        payload = data.model_dump()['archive_wallet_group_requests']
+        payload = data.model_dump(exclude_none=True)['archive_wallet_group_requests']
         return await self._api_call("POST", "wallets/group-archive/", payload)
 
     async def unarchive_wallet_group(self, data: UnarchiveWalletGroupRequestContainer) -> List[GroupArchiveOrUnarchiveResponse]:
         """Unarchive the specified wallet groups."""
         # payload = json.dumps([{"group": group_name} for group_name in data.group_names])
-        payload = data.model_dump()['unarchive_wallet_group_requests']
+        payload = data.model_dump(exclude_none=True)['unarchive_wallet_group_requests']
         return await self._api_call("POST", "wallets/group-unarchive/", payload)
 
     async def remove_wallets_from_group(self, data: RemoveWalletsFromGroupRequestContainer) -> List[RemoveWalletFromGroupResponse]:
         """Remove wallets from a group."""
         # payload = json.dumps([{"wallet": wallet_name, "group": data.group_name} for wallet_name in data.wallet_names])
-        payload = data.model_dump()['remove_wallets_from_group_requests']
+        payload = data.model_dump(exclude_none=True)['remove_wallets_from_group_requests']
         return await self._api_call("POST", "wallets/remove-wallet-from-group/", payload)
 
     async def transfer_tokens(self, data: TransferTokensRequestContainer) -> List[TransferTokenResponse]:
         """Transfer tokens from one wallet to another."""
         # payload = [v.model_dump() for v in data.transfer_tokens_requests]
-        payload = data.model_dump()['transfer_tokens_requests']
+        payload = data.model_dump(exclude_none=True)['transfer_tokens_requests']
         return await self._api_call("POST", "transfers/transfer/", payload)
 
     async def create_dca_order(self, data: DCAOrderRequestContainer) -> List[DCAOrderResponse]:
         """Create a DCA order."""
         # payload = [v.model_dump() for v in data.dca_order_requests]
-        payload = data.model_dump()['dca_order_requests']
+        payload = data.model_dump(exclude_none=True)['dca_order_requests']
         return await self._api_call("POST", "transactions/dca-order/", payload)
 
     async def list_dca_orders(self) -> List[DCAOrderResponse]:
@@ -501,5 +501,5 @@ class ArmorWalletAPIClient:
     async def cancel_dca_order(self, data: CancelDCAOrderRequestContainer) -> List[CancelDCAOrderResponse]:
         """Cancel a DCA order."""
         # payload = [v.model_dump() for v in data.cancel_dca_order_requests]
-        payload = data.model_dump()['cancel_dca_order_requests']
+        payload = data.model_dump(exclude_none=True)['cancel_dca_order_requests']
         return await self._api_call("POST", "transactions/dca-order/cancel/", payload)

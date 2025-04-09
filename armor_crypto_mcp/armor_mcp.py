@@ -394,9 +394,9 @@ async def list_dca_orders() -> List[DCAOrderResponse]:
 @mcp.tool()
 async def cancel_dca_order(cancel_dca_order_requests: CancelDCAOrderRequestContainer) -> List[CancelDCAOrderResponse]:
     """
-    Cancel a DCA order.
-    
-    Expects a CancelDCAOrderRequestContainer, returns a list of CancelDCAOrderResponse.
+    Create a DCA order.
+
+    Note: Make a single or multiple dca_order_requests 
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
