@@ -7,24 +7,21 @@ import httpx
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP, Context
 
-# Import the ArmorWalletAPIClient, individual models, and the new container models.
-from .armor_client import (
-    ArmorWalletAPIClient,
+# Import the ArmorWalletAPIClient
+from armor_client import ArmorWalletAPIClient
+
+# Import base models
+from armor_client import (
     WalletTokenPairs,
-    WalletTokenPairsContainer,         # New container for wallet/token pairs
     WalletTokenBalance,
     ConversionRequest,
-    ConversionRequestContainer,        # New container for conversion requests
     ConversionResponse,
     SwapQuoteRequest,
-    SwapQuoteRequestContainer,           # New container for swap quote requests
     SwapQuoteResponse,
     SwapTransactionRequest,
-    SwapTransactionRequestContainer,     # New container for swap transaction requests
     SwapTransactionResponse,
     Wallet,
     TokenDetailsRequest,
-    TokenDetailsRequestContainer,        # New container for token details requests
     TokenDetailsResponse,
     GroupInfo,
     SingleGroupInfo,
@@ -36,14 +33,39 @@ from .armor_client import (
     RemoveWalletFromGroupResponse,
     UserWalletsAndGroupsResponse,
     TransferTokensRequest,
-    TransferTokensRequestContainer,      # New container for transfer tokens requests
     TransferTokenResponse,
     DCAOrderRequest,
-    DCAOrderRequestContainer,            # New container for DCA order requests
     DCAOrderResponse,
     CancelDCAOrderRequest,
-    CancelDCAOrderRequestContainer,      # New container for cancel DCA order requests
-    CancelDCAOrderResponse
+    CancelDCAOrderResponse,
+    CreateWalletRequest,
+    ArchiveWalletsRequest,
+    UnarchiveWalletsRequest,
+    CreateGroupsRequest,
+    ArchiveWalletGroupRequest,
+    UnarchiveWalletGroupRequest,
+    RemoveWalletsFromGroupRequest,
+    ListSingleGroupRequest,
+)
+
+# Import container models
+from armor_client import (
+    WalletTokenPairsContainer,
+    ConversionRequestContainer,
+    SwapQuoteRequestContainer,
+    SwapTransactionRequestContainer,
+    TokenDetailsRequestContainer,
+    TransferTokensRequestContainer,
+    DCAOrderRequestContainer,
+    CancelDCAOrderRequestContainer,
+    CreateWalletRequestContainer,
+    ArchiveWalletsRequestContainer,
+    UnarchiveWalletRequestContainer,
+    CreateGroupsRequestContainer,
+    AddWalletToGroupRequestContainer,
+    ArchiveWalletGroupRequestContainer,
+    UnarchiveWalletGroupRequestContainer,
+    RemoveWalletsFromGroupRequestContainer
 )
 
 # Load environment variables (e.g. BASE_API_URL, etc.)
@@ -172,7 +194,7 @@ async def list_groups() -> List[GroupInfo]:
 
 
 @mcp.tool()
-async def list_single_group(group_name: str) -> SingleGroupInfo:
+async def list_single_group(list_single_group_requests: ListSingleGroupRequest) -> SingleGroupInfo:
     """
     Retrieve details for a single wallet group.
     
@@ -181,14 +203,14 @@ async def list_single_group(group_name: str) -> SingleGroupInfo:
     if not armor_client:
         return {"error": "Not logged in"}
     try:
-        result: SingleGroupInfo = await armor_client.list_single_group(group_name)
+        result: SingleGroupInfo = await armor_client.list_single_group(list_single_group_requests)
         return result
     except Exception as e:
         return {"error": str(e)}
 
 
 @mcp.tool()
-async def create_wallet(wallet_names_list: List[str]) -> List[WalletInfo]:
+async def create_wallet(create_wallet_requests: CreateWalletRequestContainer) -> List[WalletInfo]:
     """
     Create new wallets.
     
@@ -197,14 +219,14 @@ async def create_wallet(wallet_names_list: List[str]) -> List[WalletInfo]:
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[WalletInfo] = await armor_client.create_wallet(wallet_names_list)
+        result: List[WalletInfo] = await armor_client.create_wallet(create_wallet_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
 
 
 @mcp.tool()
-async def archive_wallets(wallet_names_list: List[str]) -> List[WalletArchiveOrUnarchiveResponse]:
+async def archive_wallets(archive_wallet_requests: ArchiveWalletsRequestContainer) -> List[WalletArchiveOrUnarchiveResponse]:
     """
     Archive wallets.
     
@@ -213,14 +235,14 @@ async def archive_wallets(wallet_names_list: List[str]) -> List[WalletArchiveOrU
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[WalletArchiveOrUnarchiveResponse] = await armor_client.archive_wallets(wallet_names_list)
+        result: List[WalletArchiveOrUnarchiveResponse] = await armor_client.archive_wallets(archive_wallet_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
 
 
 @mcp.tool()
-async def unarchive_wallets(wallet_names_list: List[str]) -> List[WalletArchiveOrUnarchiveResponse]:
+async def unarchive_wallets(unarchive_wallet_requests: UnarchiveWalletRequestContainer) -> List[WalletArchiveOrUnarchiveResponse]:
     """
     Unarchive wallets.
     
@@ -229,14 +251,14 @@ async def unarchive_wallets(wallet_names_list: List[str]) -> List[WalletArchiveO
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[WalletArchiveOrUnarchiveResponse] = await armor_client.unarchive_wallets(wallet_names_list)
+        result: List[WalletArchiveOrUnarchiveResponse] = await armor_client.unarchive_wallets(unarchive_wallet_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
 
 
 @mcp.tool()
-async def create_groups(group_names_list: List[str]) -> List[CreateGroupResponse]:
+async def create_groups(create_groups_requests: CreateGroupsRequestContainer) -> List[CreateGroupResponse]:
     """
     Create new wallet groups.
     
@@ -245,14 +267,14 @@ async def create_groups(group_names_list: List[str]) -> List[CreateGroupResponse
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[CreateGroupResponse] = await armor_client.create_groups(group_names_list)
+        result: List[CreateGroupResponse] = await armor_client.create_groups(create_groups_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
 
 
 @mcp.tool()
-async def add_wallets_to_group(group_name: str, wallet_names_list: List[str]) -> List[AddWalletToGroupResponse]:
+async def add_wallets_to_group(add_wallet_to_group_requests: AddWalletToGroupRequestContainer) -> List[AddWalletToGroupResponse]:
     """
     Add wallets to a specified group.
     
@@ -261,14 +283,14 @@ async def add_wallets_to_group(group_name: str, wallet_names_list: List[str]) ->
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[AddWalletToGroupResponse] = await armor_client.add_wallets_to_group(group_name, wallet_names_list)
+        result: List[AddWalletToGroupResponse] = await armor_client.add_wallets_to_group(add_wallet_to_group_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
 
 
 @mcp.tool()
-async def archive_wallet_group(group_names_list: List[str]) -> List[GroupArchiveOrUnarchiveResponse]:
+async def archive_wallet_group(archive_wallet_group_requests: ArchiveWalletGroupRequestContainer) -> List[GroupArchiveOrUnarchiveResponse]:
     """
     Archive wallet groups.
     
@@ -277,14 +299,14 @@ async def archive_wallet_group(group_names_list: List[str]) -> List[GroupArchive
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[GroupArchiveOrUnarchiveResponse] = await armor_client.archive_wallet_group(group_names_list)
+        result: List[GroupArchiveOrUnarchiveResponse] = await armor_client.archive_wallet_group(archive_wallet_group_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
 
 
 @mcp.tool()
-async def unarchive_wallet_group(group_names_list: List[str]) -> List[GroupArchiveOrUnarchiveResponse]:
+async def unarchive_wallet_group(unarchive_wallet_group_requests: UnarchiveWalletGroupRequestContainer) -> List[GroupArchiveOrUnarchiveResponse]:
     """
     Unarchive wallet groups.
     
@@ -293,14 +315,14 @@ async def unarchive_wallet_group(group_names_list: List[str]) -> List[GroupArchi
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[GroupArchiveOrUnarchiveResponse] = await armor_client.unarchive_wallet_group(group_names_list)
+        result: List[GroupArchiveOrUnarchiveResponse] = await armor_client.unarchive_wallet_group(unarchive_wallet_group_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
 
 
 @mcp.tool()
-async def remove_wallets_from_group(group_name: str, wallet_names_list: List[str]) -> List[RemoveWalletFromGroupResponse]:
+async def remove_wallets_from_group(remove_wallets_from_group_requests: RemoveWalletsFromGroupRequestContainer) -> List[RemoveWalletFromGroupResponse]:
     """
     Remove wallets from a specified group.
     
@@ -309,7 +331,7 @@ async def remove_wallets_from_group(group_name: str, wallet_names_list: List[str
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[RemoveWalletFromGroupResponse] = await armor_client.remove_wallets_from_group(group_name, wallet_names_list)
+        result: List[RemoveWalletFromGroupResponse] = await armor_client.remove_wallets_from_group(remove_wallets_from_group_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
