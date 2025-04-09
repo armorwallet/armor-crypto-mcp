@@ -7,21 +7,15 @@ import httpx
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP, Context
 
-# Import the ArmorWalletAPIClient
-from .armor_client import ArmorWalletAPIClient
 
 # Import base models
 from .armor_client import (
-    WalletTokenPairs,
+    ArmorWalletAPIClient,
     WalletTokenBalance,
-    ConversionRequest,
     ConversionResponse,
-    SwapQuoteRequest,
     SwapQuoteResponse,
-    SwapTransactionRequest,
     SwapTransactionResponse,
     Wallet,
-    TokenDetailsRequest,
     TokenDetailsResponse,
     GroupInfo,
     SingleGroupInfo,
@@ -31,25 +25,10 @@ from .armor_client import (
     AddWalletToGroupResponse,
     GroupArchiveOrUnarchiveResponse,
     RemoveWalletFromGroupResponse,
-    UserWalletsAndGroupsResponse,
-    TransferTokensRequest,
     TransferTokenResponse,
-    DCAOrderRequest,
     DCAOrderResponse,
-    CancelDCAOrderRequest,
     CancelDCAOrderResponse,
-    CreateWalletRequest,
-    ArchiveWalletsRequest,
-    UnarchiveWalletsRequest,
-    CreateGroupsRequest,
-    ArchiveWalletGroupRequest,
-    UnarchiveWalletGroupRequest,
-    RemoveWalletsFromGroupRequest,
     ListSingleGroupRequest,
-)
-
-# Import container models
-from .armor_client import (
     WalletTokenPairsContainer,
     ConversionRequestContainer,
     SwapQuoteRequestContainer,
@@ -65,7 +44,15 @@ from .armor_client import (
     AddWalletToGroupRequestContainer,
     ArchiveWalletGroupRequestContainer,
     UnarchiveWalletGroupRequestContainer,
-    RemoveWalletsFromGroupRequestContainer
+    RemoveWalletsFromGroupRequestContainer,
+    CreateOrderRequestContainer,
+    CancelOrderRequestContainer,
+    CreateOrderResponseContainer,
+    CancelOrderResponseContainer,
+    StakeQuoteRequestContainer,
+    UnstakeQuoteRequestContainer,
+    StakeTransactionRequestContainer,
+    UnstakeTransactionRequestContainer,
 )
 
 # Load environment variables (e.g. BASE_API_URL, etc.)
@@ -162,6 +149,22 @@ async def get_all_wallets() -> List[Wallet]:
         return [{"error": "Not logged in"}]
     try:
         result: List[Wallet] = await armor_client.get_all_wallets()
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
+    
+
+@mcp.tool()
+async def get_all_orders() -> List:
+    """
+    Retrieve all limit and stop loss orders.
+    
+    Returns a list of orders.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: List = await armor_client.get_all_orders()
         return result
     except Exception as e:
         return [{"error": str(e)}]
@@ -405,6 +408,103 @@ async def cancel_dca_order(cancel_dca_order_requests: CancelDCAOrderRequestConta
         return result
     except Exception as e:
         return [{"error": str(e)}]
+    
+
+@mcp.tool()
+async def create_order(create_order_requests: CreateOrderRequestContainer) -> CreateOrderResponseContainer:
+    """
+    Create a order. Can be a limit or stop loss order
+    
+    Expects a CreateOrderRequestContainer, returns a CreateOrderResponseContainer.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: CreateOrderResponseContainer = await armor_client.create_order(create_order_requests)
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
+    
+
+@mcp.tool()
+async def cancel_order(cancel_order_requests: CancelOrderRequestContainer) -> CancelOrderResponseContainer:
+    """
+    Cancel a limit or stop loss order.
+    
+    Expects a CancelOrderRequestContainer, returns a CancelOrderResponseContainer.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: CancelOrderResponseContainer = await armor_client.cancel_order(cancel_order_requests)
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
+    
+
+@mcp.tool()
+async def stake_quote(stake_quote_requests: StakeQuoteRequestContainer) -> SwapQuoteRequestContainer:
+    """
+    Retrieve a stake quote.
+    
+    Expects a StakeQuoteRequestContainer, returns a SwapQuoteRequestContainer.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: StakeQuoteRequestContainer = await armor_client.stake_quote(stake_quote_requests)
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
+
+
+@mcp.tool()
+async def unstake_quote(unstake_quote_requests: UnstakeQuoteRequestContainer) -> SwapQuoteRequestContainer:
+    """
+    Retrieve an unstake quote.
+
+    Expects a UnstakeQuoteRequestContainer, returns a SwapQuoteRequestContainer.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: UnstakeQuoteRequestContainer = await armor_client.unstake_quote(unstake_quote_requests)
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
+
+
+@mcp.tool()
+async def stake_transaction(stake_transaction_requests: StakeTransactionRequestContainer) -> SwapTransactionRequestContainer:
+    """
+    Execute a stake transaction.
+    
+    Expects a StakeTransactionRequestContainer, returns a SwapTransactionRequestContainer.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: SwapTransactionRequestContainer = await armor_client.stake_transaction(stake_transaction_requests)
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
+
+
+@mcp.tool()
+async def unstake_transaction(unstake_transaction_requests: UnstakeTransactionRequestContainer) -> SwapTransactionRequestContainer:
+    """
+    Execute an unstake transaction.
+    
+    Expects a UnstakeTransactionRequestContainer, returns a SwapTransactionRequestContainer.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: SwapTransactionRequestContainer = await armor_client.unstake_transaction(unstake_transaction_requests)
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
+
 
 
 @mcp.prompt()

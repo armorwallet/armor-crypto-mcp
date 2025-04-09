@@ -43,6 +43,20 @@ class SwapQuoteRequest(BaseModel):
     input_amount: float = Field(description="input amount to swap")
 
 
+class StakeQuoteRequest(BaseModel):
+    from_wallet: str = Field(description="The name of the wallet that input_token is in.")
+    input_token: str = "So11111111111111111111111111111111111111112"  # Hardcoded SOL token address
+    output_token: str = "jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v"
+    input_amount: float = Field(description="input amount to swap")
+
+
+class UnstakeQuoteRequest(BaseModel):
+    from_wallet: str = Field(description="The name of the wallet that input_token is in.")
+    input_token: str = "jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v"
+    output_token: str = "So11111111111111111111111111111111111111112"
+    input_amount: float = Field(description="input amount to swap")
+
+
 class SwapQuoteResponse(BaseModel):
     id: str = Field(description="unique id of the generated swap quote")
     wallet_address: str = Field(description="public address of the wallet")
@@ -57,6 +71,14 @@ class SwapQuoteResponse(BaseModel):
 
 class SwapTransactionRequest(BaseModel):
     transaction_id: str = Field(description="unique id of the generated swap quote")
+
+
+class StakeTransactionRequest(BaseModel):
+    transaction_id: str = Field(description="unique id of the generated stake quote")
+
+
+class UnstakeTransactionRequest(BaseModel):
+    transaction_id: str = Field(description="unique id of the generated unstake quote")
 
 
 class SwapTransactionResponse(BaseModel):
@@ -223,6 +245,51 @@ class DCAOrderResponse(BaseModel):
     watchers: List[DCAWatcher] = Field(description="list of watchers for the DCA order")
     dca_transactions: List[dict] = Field(description="list of DCA transactions")  # Can be further typed if structure is known
 
+class CreateOrderRequest(BaseModel):
+    wallet: str = Field(description="name of the wallet")
+    input_token: str = Field(description="public address of the input token")
+    output_token: str = Field(description="public address of the output token")
+    amount: float = Field(description="amount of input token to invest")
+    strategy_duration: int = Field(description="duration of the order")
+    strategy_duration_unit: Literal["MINUTE", "HOUR", "DAY", "WEEK", "MONTH", "YEAR"] = Field(description="unit of the duration of the order")
+    stop_loss_watch_field: Optional[Literal["liquidity", "marketCap", "price"]] = Field(description="only needed when order_type field is STOP_LOSS or STOP_LIMIT")
+    limit_watch_field: Optional[Literal["liquidity", "marketCap", "price"]] = Field(description="only needed when order_type field is LIMIT or STOP_LIMIT")
+    token_address_watcher: str = Field(description="public address of the token to watch")
+    stop_loss_delta_percentage: Optional[float] = Field(description="percentage for stop loss delta. only needed when order_type field is STOP_LOSS or STOP_LIMIT")
+    limit_delta_percentage: Optional[float] = Field(description="percentage for limit delta. only needed when order_type field is LIMIT or STOP_LIMIT")
+    order_type: Literal["LIMIT", "STOP_LOSS", "STOP_LIMIT"] = Field(description="type of the order. Wether it is a limit order, stop loss order or stop limit order")
+
+
+class OrderWatcher(BaseModel):
+    watch_field: Literal["liquidity", "marketCap", "price"] = Field(description="field being watched")
+    delta_type: Literal["INCREASE", "DECREASE", "MOVE", "MOVE_DAILY", "AVERAGE_MOVE"] = Field(description="type of delta change")
+    initial_value: float = Field(description="initial value when watcher was created")
+    delta_percentage: float = Field(description="percentage for delta change")
+    watcher_type: Literal["LIMIT", "STOP_LOSS"] = Field(description="type of watcher")
+    buying_price: Optional[float] = Field(description="price at which to buy", default=None)
+
+
+class OrderResponse(BaseModel):
+    id: str = Field(description="unique identifier of the order")
+    amount: float = Field(description="amount of tokens to invest")
+    status: str = Field(description="current status of the order")
+    input_token_address: str = Field(description="public address of the input token")
+    output_token_address: str = Field(description="public address of the output token")
+    wallet_name: str = Field(description="name of the wallet")
+    order_type: Literal["LIMIT", "STOP_LOSS", "STOP_LIMIT"] = Field(description="type of the order")
+    expiry_time: str = Field(description="expiry time of the order in ISO format")
+    watchers: List[OrderWatcher] = Field(description="list of watchers for the order")
+    transaction: Optional[dict] = Field(description="transaction details if any", default=None)
+
+
+class CancelOrderRequest(BaseModel):
+    order_id: str = Field(description="id of the limit order")
+
+
+class CancelOrderResponse(BaseModel):
+    order_id: str = Field(description="id of the limit order")
+    status: str = Field(description="status of the limit order")
+
 
 class CancelDCAOrderRequest(BaseModel):
     dca_order_id: str = Field(description="id of the DCA order")
@@ -303,8 +370,24 @@ class SwapQuoteRequestContainer(BaseModel):
     swap_quote_requests: List[SwapQuoteRequest]
 
 
+class StakeQuoteRequestContainer(BaseModel):
+    stake_quote_requests: List[StakeQuoteRequest]
+
+
+class UnstakeQuoteRequestContainer(BaseModel):
+    unstake_quote_requests: List[UnstakeQuoteRequest]
+
+
 class SwapTransactionRequestContainer(BaseModel):
     swap_transaction_requests: List[SwapTransactionRequest]
+
+
+class StakeTransactionRequestContainer(BaseModel):
+    stake_transaction_requests: List[StakeTransactionRequest]
+
+
+class UnstakeTransactionRequestContainer(BaseModel):
+    unstake_transaction_requests: List[UnstakeTransactionRequest]
 
 
 class TokenDetailsRequestContainer(BaseModel):
@@ -322,6 +405,20 @@ class DCAOrderRequestContainer(BaseModel):
 class CancelDCAOrderRequestContainer(BaseModel):
     cancel_dca_order_requests: List[CancelDCAOrderRequest]
 
+class CreateOrderRequestContainer(BaseModel):
+    create_order_requests: List[CreateOrderRequest]
+
+
+class CreateOrderResponseContainer(BaseModel):
+    create_order_responses: List[OrderResponse]
+
+
+class CancelOrderRequestContainer(BaseModel):
+    cancel_order_requests: List[CancelOrderRequest]
+
+
+class CancelOrderResponseContainer(BaseModel):
+    cancel_order_responses: List[CancelOrderResponse]
 
 # ------------------------------
 # API Client
@@ -399,10 +496,32 @@ class ArmorWalletAPIClient:
         payload = data.model_dump(exclude_none=True)['swap_quote_requests']
         return await self._api_call("POST", "transactions/quote/", payload)
 
+    async def stake_quote(self, data: StakeQuoteRequestContainer) -> StakeQuoteRequestContainer:
+        """Obtain a stake quote."""
+        self.logger.info(f"Stake quote request: {data}")
+        payload = data.model_dump(exclude_none=True)['stake_quote_requests']
+        return await self._api_call("POST", "transactions/quote/", payload)
+    
+    async def unstake_quote(self, data: UnstakeQuoteRequestContainer) -> UnstakeQuoteRequestContainer:
+        """Obtain an unstake quote."""
+        self.logger.info(f"Unstake quote request: {data}")
+        payload = data.model_dump(exclude_none=True)['unstake_quote_requests']
+        return await self._api_call("POST", "transactions/quote/", payload)
+
     async def swap_transaction(self, data: SwapTransactionRequestContainer) -> List[SwapTransactionResponse]:
         """Execute the swap transactions."""
         # payload = [v.model_dump() for v in data.swap_transaction_requests]
         payload = data.model_dump(exclude_none=True)['swap_transaction_requests']
+        return await self._api_call("POST", "transactions/swap/", payload)
+    
+    async def stake_transaction(self, data: StakeTransactionRequestContainer) -> StakeTransactionRequestContainer:
+        """Execute the stake transactions."""
+        payload = data.model_dump(exclude_none=True)['stake_transaction_requests']
+        return await self._api_call("POST", "transactions/swap/", payload)
+    
+    async def unstake_transaction(self, data: UnstakeTransactionRequestContainer) -> UnstakeTransactionRequestContainer:
+        """Execute the unstake transactions."""
+        payload = data.model_dump(exclude_none=True)['unstake_transaction_requests']
         return await self._api_call("POST", "transactions/swap/", payload)
 
     # Duplicate of list_single_group
@@ -417,6 +536,10 @@ class ArmorWalletAPIClient:
     async def get_all_wallets(self) -> List[Wallet]:
         """Return all wallets with balances."""
         return await self._api_call("GET", "wallets/")
+    
+    async def get_all_orders(self) -> List:
+        """Return all orders."""
+        return await self._api_call("GET", "transactions/order/")
 
     async def get_token_details(self, data: TokenDetailsRequestContainer) -> List[TokenDetailsResponse]:
         """Retrieve token details."""
@@ -503,3 +626,14 @@ class ArmorWalletAPIClient:
         # payload = [v.model_dump() for v in data.cancel_dca_order_requests]
         payload = data.model_dump(exclude_none=True)['cancel_dca_order_requests']
         return await self._api_call("POST", "transactions/dca-order/cancel/", payload)
+    
+    async def create_order(self, data: CreateOrderRequestContainer) -> CreateOrderResponseContainer:
+        """Create a order."""
+        payload = data.model_dump(exclude_none=True)['create_order_requests']
+        return await self._api_call("POST", "transactions/order/", payload)
+    
+    async def cancel_order(self, data: CancelOrderRequestContainer) -> CancelOrderResponseContainer:
+        """Cancel a order."""
+        payload = data.model_dump(exclude_none=True)['cancel_order_requests']
+        return await self._api_call("POST", "transactions/order/cancel/", payload) 
+    
