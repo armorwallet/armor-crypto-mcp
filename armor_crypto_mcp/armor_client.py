@@ -429,20 +429,10 @@ import logging
 import traceback
 
 class ArmorWalletAPIClient:
-    def __init__(self, access_token: str, base_api_url: str = 'https://app.armorwallet.ai/api/v1', log_path="debug.log"):
+    def __init__(self, access_token: str, base_api_url: str = 'https://app.armorwallet.ai/api/v1', logger=None):
         self.base_api_url = base_api_url
         self.access_token = access_token
-
-        if log_path is not None:
-            self.logger = logging.getLogger(__name__)
-            self.logger.setLevel(logging.DEBUG)
-            file_handler = logging.FileHandler(log_path)
-            file_handler.setLevel(logging.DEBUG)
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-            file_handler.setFormatter(formatter)
-            self.logger.addHandler(file_handler)
-        else:
-            self.logger = None
+        self.logger = logger
 
     async def _api_call(self, method: str, endpoint: str, payload: str = None) -> dict:
         """Utility function for API calls to the wallet.
@@ -498,13 +488,11 @@ class ArmorWalletAPIClient:
 
     async def stake_quote(self, data: StakeQuoteRequestContainer) -> StakeQuoteRequestContainer:
         """Obtain a stake quote."""
-        self.logger.info(f"Stake quote request: {data}")
         payload = data.model_dump(exclude_none=True)['stake_quote_requests']
         return await self._api_call("POST", "transactions/quote/", payload)
     
     async def unstake_quote(self, data: UnstakeQuoteRequestContainer) -> UnstakeQuoteRequestContainer:
         """Obtain an unstake quote."""
-        self.logger.info(f"Unstake quote request: {data}")
         payload = data.model_dump(exclude_none=True)['unstake_quote_requests']
         return await self._api_call("POST", "transactions/quote/", payload)
 
@@ -523,15 +511,6 @@ class ArmorWalletAPIClient:
         """Execute the unstake transactions."""
         payload = data.model_dump(exclude_none=True)['unstake_transaction_requests']
         return await self._api_call("POST", "transactions/swap/", payload)
-
-    # Duplicate of list_single_group
-    # async def get_wallets_from_group(self, group_name: str) -> list:
-    #     """Return the list of wallet names from the specified group."""
-    #     result = await self._api_call("GET", f"wallets/groups/{group_name}")
-    #     try:
-    #         return [wallet['name'] for wallet in result['wallets']]
-    #     except Exception:
-    #         return []
 
     async def get_all_wallets(self) -> List[Wallet]:
         """Return all wallets with balances."""
@@ -554,7 +533,6 @@ class ArmorWalletAPIClient:
     #
     async def list_single_group(self, data: ListSingleGroupRequest) -> SingleGroupInfo:
         """Return details for a single wallet group."""
-        self.logger.info(f"Listing single group: {data}")
         return await self._api_call("GET", f"wallets/groups/{data.group_name}/")
 
     async def create_wallet(self, data: CreateWalletRequestContainer) -> List[WalletInfo]:

@@ -77,13 +77,13 @@ We are currently in pre-alpha, and we are testing the capabilities of various ag
     - Archiving
 - Swap & Trades
     - Normal swap
-    - DCA
-    - Limit Orders
+    - DCA (place / list / cancel)
+    - Limit Orders (place / list / cancel)
+- Staking and Unstaking
 - Supports Solana blockchain
 
 ## Coming Soon
 - More Blockchain Support
-- Staking
 - Minting
 - Armor Agents as a Tool
 

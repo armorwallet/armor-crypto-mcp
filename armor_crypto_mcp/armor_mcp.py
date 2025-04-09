@@ -1,9 +1,6 @@
 import os
-import json
-import logging
-from typing import List, Dict, Any
+from typing import List
 
-import httpx
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP, Context
 
