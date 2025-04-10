@@ -335,6 +335,13 @@ class RemoveWalletsFromGroupRequest(BaseModel):
     group: str = Field(description="Name of the group to remove wallets from")
     wallet: str = Field(description="List of wallet names to remove from the group")
 
+class TopTrendingTokensRequest(BaseModel):
+    time_frame: Literal["5m", "15m", "30m", "1h", "2h", "3h", "4h", "5h", "6h", "12h", "24h"] = Field(default="4h", description="Time frame to get the top trending tokens")
+
+class StakeBalanceResponse(BaseModel):
+    total_stake_amount: float = Field(description="Total stake balance in jupSol")
+    total_stake_amount_in_usd: float = Field(description="Total stake balance in USD")
+
 # ------------------------------
 # Container Models for List Inputs
 # ------------------------------
@@ -620,6 +627,14 @@ class ArmorWalletAPIClient:
         """Cancel a order."""
         payload = data.model_dump(exclude_none=True)['cancel_order_requests']
         return await self._api_call("POST", "transactions/order/cancel/", payload) 
+    
+    async def top_trending_tokens(self, data: TopTrendingTokensRequest) -> List:
+        """Get the top trending tokens."""
+        return await self._api_call("GET", f"tokens/trending/?timeframe={data.time_frame}")
+    
+    async def get_stake_balances(self) -> StakeBalanceResponse:
+        """Get the stake balances."""
+        return await self._api_call("GET", "frontend/wallets/stake/balance/")
 
 # ------------------------------
 # Utility Functions

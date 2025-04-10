@@ -27,6 +27,8 @@ from .armor_client import (
     DCAOrderResponse,
     CancelDCAOrderResponse,
     ListSingleGroupRequest,
+    TopTrendingTokensRequest,
+    StakeBalanceResponse,
     WalletTokenPairsContainer,
     ConversionRequestContainer,
     SwapQuoteRequestContainer,
@@ -514,7 +516,38 @@ async def unstake_transaction(unstake_transaction_requests: UnstakeTransactionRe
         return result
     except Exception as e:
         return [{"error": str(e)}]
+    
 
+@mcp.tool()
+async def get_top_trending_tokens(top_trending_tokens_requests: TopTrendingTokensRequest) -> List:
+    """
+    Get the top trending tokens in a particular time frame.
+    
+    Expects a TopTrendingTokensRequest, returns a list of tokens with their details.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: List = await armor_client.top_trending_tokens(top_trending_tokens_requests)
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
+    
+
+@mcp.tool()
+async def get_stake_balances() -> StakeBalanceResponse:
+    """
+    Get the stake balance.
+    
+    Returns a StakeBalanceResponse.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: StakeBalanceResponse = await armor_client.get_stake_balances()
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
 
 
 @mcp.prompt()
