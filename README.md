@@ -78,21 +78,24 @@ We are currently in pre-alpha, and we are testing the capabilities of various ag
 - Swap & Trades
     - Normal swap
     - DCA (place / list / cancel)
+    - Scheduled Orders
     - Limit Orders (place / list / cancel)
 - Staking and Unstaking
+- Token Search and Trending Tokens
+- Statistical Calculator for accurate Analysis
 - Supports Solana blockchain
 
 ## Coming Soon
 - More Blockchain Support
 - Minting
-- Armor Agents as a Tool
+- Armor Agents as a Tool (or A2A)
 
 ## MCP Setup
 Currently you need to have the Armor NFT to get an API Key.
 Get it [here](https://codex.armorwallet.ai/)
 
 ## Usage & Configuration
-To use the Armor MCP with your agent, you need the following configuration:
+To use the Armor MCP with your agent, you need the following configuration, replace `<PUT-YOUR-KEY-HERE>` with your API key:
 ```json
 {
   "mcpServers": {
