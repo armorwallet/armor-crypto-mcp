@@ -96,6 +96,10 @@ class SwapTransactionResponse(BaseModel):
     status: str = Field(description="status of the transaction")
 
 
+class ListWalletsRequest(BaseModel):
+    is_archived: bool = Field(default=False, description="whether to include archived wallets")
+
+
 class WalletBalance(BaseModel):
     mint_address: str = Field(description="public mint address of output token. To get the address from a token symbol use `get_token_details`")
     name: str = Field(description="name of the token")
@@ -214,6 +218,10 @@ class TransferTokenResponse(BaseModel):
     message: str = Field(description="message of the operation showing if tokens were transferred")
 
 
+class ListDCAOrderRequest(BaseModel):
+    status: Optional[Literal["COMPLETED", "OPEN", "CANCELLED"]] = Field(default="COMPLETED", description="status of the DCA order")
+
+
 class DCAOrderRequest(BaseModel):
     wallet: str = Field(description="name of the wallet")
     input_token: str = Field(description="public address of the input token. To get the address from a token symbol use `get_token_details`")
@@ -250,6 +258,10 @@ class DCAOrderResponse(BaseModel):
     wallet_name: str = Field(description="name of the wallet")
     watchers: List[DCAWatcher] = Field(description="list of watchers for the DCA order")
     dca_transactions: List[dict] = Field(description="list of DCA transactions")  # Can be further typed if structure is known
+
+
+class ListOrderRequest(BaseModel):
+    status: Optional[Literal["OPEN", "CANCELLED", "EXPIRED", "COMPLETED", "FAILED", "IN_PROCESS"]] = Field(default="CANCELLED", description="status of the order")
 
 class CreateOrderRequest(BaseModel):
     wallet: str = Field(description="name of the wallet")
@@ -525,13 +537,13 @@ class ArmorWalletAPIClient:
         payload = data.model_dump(exclude_none=True)['unstake_transaction_requests']
         return await self._api_call("POST", "transactions/swap/", payload)
 
-    async def get_all_wallets(self) -> List[Wallet]:
+    async def get_all_wallets(self, data: ListWalletsRequest) -> List[Wallet]:
         """Return all wallets with balances."""
-        return await self._api_call("GET", "wallets/")
+        return await self._api_call("GET", f"wallets/?is_archived={data.is_archived}")
     
-    async def get_all_orders(self) -> List:
+    async def get_all_orders(self, data: ListOrderRequest) -> List:
         """Return all orders."""
-        return await self._api_call("GET", "transactions/order/")
+        return await self._api_call("GET", f"transactions/order/?status={data.status}")
 
     async def get_token_details(self, data: TokenDetailsRequestContainer) -> List[TokenDetailsResponse]:
         """Retrieve token details."""
@@ -543,7 +555,6 @@ class ArmorWalletAPIClient:
         """Return a list of wallet groups."""
         return await self._api_call("GET", "wallets/groups/")
 
-    #
     async def list_single_group(self, data: ListSingleGroupRequest) -> SingleGroupInfo:
         """Return details for a single wallet group."""
         return await self._api_call("GET", f"wallets/groups/{data.group_name}/")
@@ -608,9 +619,9 @@ class ArmorWalletAPIClient:
         payload = data.model_dump(exclude_none=True)['dca_order_requests']
         return await self._api_call("POST", "transactions/dca-order/", payload)
 
-    async def list_dca_orders(self) -> List[DCAOrderResponse]:
+    async def list_dca_orders(self, data: ListDCAOrderRequest) -> List[DCAOrderResponse]:
         """List all DCA orders."""
-        return await self._api_call("GET", "transactions/dca-order/")
+        return await self._api_call("GET", f"transactions/dca-order/?status={data.status}")
 
     async def cancel_dca_order(self, data: CancelDCAOrderRequestContainer) -> List[CancelDCAOrderResponse]:
         """Cancel a DCA order."""
@@ -622,6 +633,10 @@ class ArmorWalletAPIClient:
         """Create a order."""
         payload = data.model_dump(exclude_none=True)['create_order_requests']
         return await self._api_call("POST", "transactions/order/", payload)
+    
+    async def list_orders(self, data: ListOrderRequest) -> List[OrderResponse]:
+        """List all orders."""
+        return await self._api_call("GET", f"transactions/order/?status={data.status}")
     
     async def cancel_order(self, data: CancelOrderRequestContainer) -> CancelOrderResponseContainer:
         """Cancel a order."""

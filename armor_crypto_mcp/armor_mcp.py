@@ -29,6 +29,9 @@ from .armor_client import (
     ListSingleGroupRequest,
     TopTrendingTokensRequest,
     StakeBalanceResponse,
+    ListWalletsRequest,
+    ListDCAOrderRequest,
+    ListOrderRequest,
     WalletTokenPairsContainer,
     ConversionRequestContainer,
     SwapQuoteRequestContainer,
@@ -151,7 +154,7 @@ async def swap_transaction(swap_transaction_requests: SwapTransactionRequestCont
 
 
 @mcp.tool()
-async def get_all_wallets() -> List[Wallet]:
+async def get_all_wallets(get_all_wallets_requests: ListWalletsRequest) -> List[Wallet]:
     """
     Retrieve all wallets with balances.
     
@@ -160,14 +163,14 @@ async def get_all_wallets() -> List[Wallet]:
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[Wallet] = await armor_client.get_all_wallets()
+        result: List[Wallet] = await armor_client.get_all_wallets(get_all_wallets_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
     
 
 @mcp.tool()
-async def get_all_orders() -> List:
+async def get_all_orders(get_all_orders_requests: ListOrderRequest) -> List:
     """
     Retrieve all limit and stop loss orders.
     
@@ -176,7 +179,7 @@ async def get_all_orders() -> List:
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List = await armor_client.get_all_orders()
+        result: List = await armor_client.get_all_orders(get_all_orders_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
@@ -391,7 +394,7 @@ async def create_dca_order(dca_order_requests: DCAOrderRequestContainer) -> List
 
 
 @mcp.tool()
-async def list_dca_orders() -> List[DCAOrderResponse]:
+async def list_dca_orders(list_dca_order_requests: ListDCAOrderRequest) -> List[DCAOrderResponse]:
     """
     List all DCA orders.
     
@@ -400,7 +403,7 @@ async def list_dca_orders() -> List[DCAOrderResponse]:
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[DCAOrderResponse] = await armor_client.list_dca_orders()
+        result: List[DCAOrderResponse] = await armor_client.list_dca_orders(list_dca_order_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
