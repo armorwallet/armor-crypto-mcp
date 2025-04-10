@@ -540,7 +540,7 @@ async def get_top_trending_tokens(top_trending_tokens_requests: TopTrendingToken
 @mcp.tool()
 async def get_stake_balances() -> StakeBalanceResponse:
     """
-    Get the stake balance.
+    Get the balance of staked SOL (jupSOL).
     
     Returns a StakeBalanceResponse.
     """

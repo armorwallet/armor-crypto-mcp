@@ -219,7 +219,7 @@ class TransferTokenResponse(BaseModel):
 
 
 class ListDCAOrderRequest(BaseModel):
-    status: Optional[Literal["COMPLETED", "OPEN", "CANCELLED"]] = Field(default="COMPLETED", description="status of the DCA order")
+    status: Optional[Literal["COMPLETED", "OPEN", "CANCELLED"]] = Field(description="status of the DCA orders, if specified filters the results.")
 
 
 class DCAOrderRequest(BaseModel):
@@ -261,7 +261,7 @@ class DCAOrderResponse(BaseModel):
 
 
 class ListOrderRequest(BaseModel):
-    status: Optional[Literal["OPEN", "CANCELLED", "EXPIRED", "COMPLETED", "FAILED", "IN_PROCESS"]] = Field(default="CANCELLED", description="status of the order")
+    status: Optional[Literal["OPEN", "CANCELLED", "EXPIRED", "COMPLETED", "FAILED", "IN_PROCESS"]] = Field(description="status of the orders, if specified filters results.")
 
 class CreateOrderRequest(BaseModel):
     wallet: str = Field(description="name of the wallet")
