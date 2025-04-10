@@ -348,7 +348,7 @@ class RemoveWalletsFromGroupRequest(BaseModel):
     wallet: str = Field(description="List of wallet names to remove from the group")
 
 class TopTrendingTokensRequest(BaseModel):
-    time_frame: Literal["5m", "15m", "30m", "1h", "2h", "3h", "4h", "5h", "6h", "12h", "24h"] = Field(default="1h", description="Time frame to get the top trending tokens")
+    time_frame: Literal["5m", "15m", "30m", "1h", "2h", "3h", "4h", "5h", "6h", "12h", "24h"] = Field(default="24h", description="Time frame to get the top trending tokens")
 
 class StakeBalanceResponse(BaseModel):
     total_stake_amount: float = Field(description="Total stake balance in jupSol")

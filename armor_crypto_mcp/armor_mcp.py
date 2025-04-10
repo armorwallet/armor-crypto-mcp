@@ -1,4 +1,5 @@
 import os
+import asyncio
 from typing import List, Any
 
 from dotenv import load_dotenv
@@ -76,6 +77,12 @@ from armor_crypto_mcp import __version__
 async def get_armor_mcp_version():
     """Get the current Armor Wallet version"""
     return {'armor_version': __version__}
+
+@mcp.tool()
+async def wait_a_moment(seconds:float):
+    """Wait for some short amount of time, no more than 10 seconds"""
+    await asyncio.wait(seconds)
+    return {"waited": seconds}
 
 @mcp.tool()
 async def calculator(expression:str, variables:dict[str, Any]):
