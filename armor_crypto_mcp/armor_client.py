@@ -5,6 +5,12 @@ from typing_extensions import List, Optional, Literal
 import httpx
 from dotenv import load_dotenv
 
+
+import ast
+import operator
+import math
+import statistics
+
 load_dotenv()
 BASE_API_URL = os.getenv("BASE_API_URL")
 
@@ -261,7 +267,7 @@ class CreateOrderRequest(BaseModel):
 
 
 class OrderWatcher(BaseModel):
-    watch_field: Literal["liquidity", "marketCap", "price"] = Field(description="field being watched")
+    watch_field: Literal["liquidity", "marketCap", "price"] = Field(description="field being watched for a delta")
     delta_type: Literal["INCREASE", "DECREASE", "MOVE", "MOVE_DAILY", "AVERAGE_MOVE"] = Field(description="type of delta change")
     initial_value: float = Field(description="initial value when watcher was created")
     delta_percentage: float = Field(description="percentage for delta change")
@@ -614,4 +620,68 @@ class ArmorWalletAPIClient:
         """Cancel a order."""
         payload = data.model_dump(exclude_none=True)['cancel_order_requests']
         return await self._api_call("POST", "transactions/order/cancel/", payload) 
+
+# ------------------------------
+# Utility Functions
+# ------------------------------   
     
+def calculate(expr: str, variables: dict = None) -> float:
+    """
+    Evaluate a math/stat expression with support for variables and common functions.
+    """
+    variables = variables or {}
+    # Allowed names from math and statistics
+    safe_names = {
+        k: v for k, v in vars(math).items() if not k.startswith("__")
+    }
+    safe_names.update({
+        'mean': statistics.mean,
+        'median': statistics.median,
+        'stdev': statistics.stdev,
+        'variance': statistics.variance,
+        'sum': sum,
+        'min': min,
+        'max': max,
+        'len': len,
+        'abs': abs,
+        'round': round
+    })
+
+    # Safe operators
+    ops = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.FloorDiv: operator.floordiv,
+        ast.Mod: operator.mod,
+        ast.Pow: operator.pow,
+        ast.USub: operator.neg
+    }
+    def _eval(node):
+        if isinstance(node, ast.Num):
+            return node.n
+        elif isinstance(node, ast.Constant):  # Python 3.8+
+            return node.value
+        elif isinstance(node, ast.BinOp):
+            return ops[type(node.op)](_eval(node.left), _eval(node.right))
+        elif isinstance(node, ast.UnaryOp):
+            return ops[type(node.op)](_eval(node.operand))
+        elif isinstance(node, ast.Name):
+            if node.id in variables:
+                return variables[node.id]
+            elif node.id in safe_names:
+                return safe_names[node.id]
+            else:
+                raise NameError(f"Unknown variable or function: {node.id}")
+        elif isinstance(node, ast.Call):
+            func = _eval(node.func)
+            args = [_eval(arg) for arg in node.args]
+            return func(*args)
+        elif isinstance(node, ast.List):
+            return [_eval(elt) for elt in node.elts]
+        else:
+            raise TypeError(f"Unsupported expression type: {type(node)}")
+
+    parsed = ast.parse(expr, mode="eval")
+    return _eval(parsed.body)

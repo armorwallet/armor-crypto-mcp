@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Any
 
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP, Context
@@ -8,6 +8,7 @@ from mcp.server.fastmcp import FastMCP, Context
 # Import base models
 from .armor_client import (
     ArmorWalletAPIClient,
+    calculate,
     WalletTokenBalance,
     ConversionResponse,
     SwapQuoteResponse,
@@ -68,8 +69,20 @@ armor_client = ArmorWalletAPIClient(ACCESS_TOKEN, base_api_url=BASE_API_URL) #, 
 from armor_crypto_mcp import __version__
 @mcp.tool()
 async def get_armor_mcp_version():
-    # return  __version__
+    """Get the current Armor Wallet version"""
     return {'armor_version': __version__}
+
+@mcp.tool()
+async def calculator(expression:str, variables:dict[str, Any]):
+    """
+    Safely evaluates a mathematical or statistical expression string using Python syntax.
+
+    Supports arithmetic operations (+, -, *, /, **, %, //), list expressions, and a range of math and statistics functions: 
+    abs, round, min, max, len, sum, mean, median, stdev, variance, sin, cos, tan, sqrt, log, exp, floor, ceil, etc.
+
+    Custom variables can be passed via the 'variables' dict, including lists for time series data.
+    """
+    return calculate(expression, variables)
 
 @mcp.tool()
 async def get_wallet_token_balance(wallet_token_pairs: WalletTokenPairsContainer) -> List[WalletTokenBalance]:
