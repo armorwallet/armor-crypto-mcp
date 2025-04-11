@@ -1,7 +1,7 @@
 import json
 import os
 from pydantic import BaseModel, Field
-from typing_extensions import List, Optional, Literal
+from typing_extensions import List, Optional, Literal, Dict
 import httpx
 from dotenv import load_dotenv
 
@@ -354,6 +354,16 @@ class StakeBalanceResponse(BaseModel):
     total_stake_amount: float = Field(description="Total stake balance in jupSol")
     total_stake_amount_in_usd: float = Field(description="Total stake balance in USD")
 
+
+class RenameWalletRequest(BaseModel):
+    wallet: str = Field(description="Name of the wallet to rename")
+    new_name: str = Field(description="New name of the wallet")
+
+
+class CandleStickRequest(BaseModel):
+    token_address: str = Field(description="Public address of the token")
+    time_frame: Literal["1s", "5s", "15s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1mn"] = Field(default="1h", description="Time frame to get the candle sticks")
+
 # ------------------------------
 # Container Models for List Inputs
 # ------------------------------
@@ -444,6 +454,10 @@ class CancelOrderRequestContainer(BaseModel):
 
 class CancelOrderResponseContainer(BaseModel):
     cancel_order_responses: List[CancelOrderResponse]
+
+
+class RenameWalletRequestContainer(BaseModel):
+    rename_wallet_requests: List[RenameWalletRequest]
 
 # ------------------------------
 # API Client
@@ -650,6 +664,15 @@ class ArmorWalletAPIClient:
     async def get_stake_balances(self) -> StakeBalanceResponse:
         """Get the stake balances."""
         return await self._api_call("GET", "frontend/wallets/stake/balance/")
+    
+    async def rename_wallet(self, data: RenameWalletRequestContainer) -> List:
+        """Rename a wallet."""
+        payload = data.model_dump(exclude_none=True)['rename_wallet_requests']
+        return await self._api_call("POST", "wallets/rename/", payload)
+    
+    async def get_candle_sticks(self, data: CandleStickRequest) -> Dict:
+        """Get the candle sticks."""
+        return await self._api_call("GET", f"tokens/candlesticks/{data.token_address}/?time_interval={data.time_frame}")
 
 # ------------------------------
 # Utility Functions

@@ -28,6 +28,7 @@ from .armor_client import (
     CancelDCAOrderResponse,
     ListSingleGroupRequest,
     TopTrendingTokensRequest,
+    CandleStickRequest,
     StakeBalanceResponse,
     ListWalletsRequest,
     ListDCAOrderRequest,
@@ -56,6 +57,7 @@ from .armor_client import (
     UnstakeQuoteRequestContainer,
     StakeTransactionRequestContainer,
     UnstakeTransactionRequestContainer,
+    RenameWalletRequestContainer,
 )
 
 # Load environment variables (e.g. BASE_API_URL, etc.)
@@ -548,6 +550,38 @@ async def get_stake_balances() -> StakeBalanceResponse:
         return [{"error": "Not logged in"}]
     try:
         result: StakeBalanceResponse = await armor_client.get_stake_balances()
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
+    
+
+@mcp.tool()
+async def rename_wallets(rename_wallet_requests: RenameWalletRequestContainer) -> List:
+    """
+    Rename wallets.
+    
+    Expects a RenameWalletRequestContainer, returns a list.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: List = await armor_client.rename_wallet(rename_wallet_requests)
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
+    
+
+@mcp.tool()
+async def get_candle_sticks(candle_stick_requests: CandleStickRequest) -> List:
+    """
+    Get the candle sticks.
+
+    Expects a CandleStickRequest, returns a list of candle sticks.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: List = await armor_client.get_candle_sticks(candle_stick_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
