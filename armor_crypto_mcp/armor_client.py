@@ -47,6 +47,7 @@ class SwapQuoteRequest(BaseModel):
     input_token: str = Field(description="public mint address of input token. To get the address from a token symbol use `get_token_details`")
     output_token: str = Field(description="public mint address of output token. To get the address from a token symbol use `get_token_details`")
     input_amount: float = Field(description="input amount to swap")
+    slippage: float = Field("slippage percentage. To estimate slippage based on liquidity see `get_token_details` for the input_token_symbol. 1.0 for high liquidity and near 20.0 for lower liquidity.")
 
 
 class StakeQuoteRequest(BaseModel):
@@ -72,7 +73,7 @@ class SwapQuoteResponse(BaseModel):
     output_token_address: str = Field(description="public address of the output token")
     input_amount: float = Field(description="input amount in input token")
     output_amount: float = Field(description="output amount in output token")
-    slippage: float = Field(description="slippage percentage. To estimate slippage based on liquidity see `get_token_details` for the input_token_symbol.")
+    slippage: float = Field(description="slippage percentage.")
 
 
 class SwapTransactionRequest(BaseModel):

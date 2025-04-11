@@ -531,7 +531,7 @@ async def unstake_transaction(unstake_transaction_requests: UnstakeTransactionRe
 @mcp.tool()
 async def get_top_trending_tokens(top_trending_tokens_requests: TopTrendingTokensRequest) -> List:
     """
-    Get the top trending tokens in a particular time frame.
+    Get the top trending tokens in a particular time frame. Great for comparing market cap or volume.
     
     Expects a TopTrendingTokensRequest, returns a list of tokens with their details.
     """
