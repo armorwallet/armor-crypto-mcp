@@ -115,9 +115,9 @@ async def get_wallet_token_balance(wallet_token_pairs: WalletTokenPairsContainer
 
 
 @mcp.tool()
-async def conversion_api(conversion_requests: ConversionRequestContainer) -> List[ConversionResponse]:
+async def calculate_token_conversion(conversion_requests: ConversionRequestContainer) -> List[ConversionResponse]:
     """
-    Perform token conversion.
+    Perform token conversion quote between two tokens. Good for quickly calculating market prices.
     
     Expects a ConversionRequestContainer, returns a list of ConversionResponse.
     """
