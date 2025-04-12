@@ -579,7 +579,7 @@ async def rename_wallets(rename_wallet_requests: RenameWalletRequestContainer) -
     
 
 @mcp.tool()
-async def get_candle_sticks(candle_stick_requests: CandleStickRequest) -> List:
+async def get_token_candle_data(candle_stick_requests: CandleStickRequest) -> List:
     """
     Get the candle sticks.
 
@@ -588,7 +588,7 @@ async def get_candle_sticks(candle_stick_requests: CandleStickRequest) -> List:
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List = await armor_client.get_candle_sticks(candle_stick_requests)
+        result: List = await armor_client.get_market_candle_data(candle_stick_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]

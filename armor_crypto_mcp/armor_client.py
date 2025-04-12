@@ -636,7 +636,8 @@ class ArmorWalletAPIClient:
 
     async def list_dca_orders(self, data: ListDCAOrderRequest) -> List[DCAOrderResponse]:
         """List all DCA orders."""
-        return await self._api_call("GET", f"transactions/dca-order/?status={data.status}")
+        payload = data.model_dump(exclude_none=True)
+        return await self._api_call("POST", f"transactions/dca-order/", payload)
 
     async def cancel_dca_order(self, data: CancelDCAOrderRequestContainer) -> List[CancelDCAOrderResponse]:
         """Cancel a DCA order."""
@@ -651,7 +652,8 @@ class ArmorWalletAPIClient:
     
     async def list_orders(self, data: ListOrderRequest) -> List[OrderResponse]:
         """List all orders."""
-        return await self._api_call("GET", f"transactions/order/?status={data.status}")
+        payload = data.model_dump(exclude_none=True)
+        return await self._api_call("POST", f"transactions/order/", payload)
     
     async def cancel_order(self, data: CancelOrderRequestContainer) -> CancelOrderResponseContainer:
         """Cancel a order."""
@@ -660,7 +662,8 @@ class ArmorWalletAPIClient:
     
     async def top_trending_tokens(self, data: TopTrendingTokensRequest) -> List:
         """Get the top trending tokens."""
-        return await self._api_call("GET", f"tokens/trending/?timeframe={data.time_frame}")
+        payload = data.model_dump(exclude_none=True)
+        return await self._api_call("POST", f"tokens/trending/", payload)
     
     async def get_stake_balances(self) -> StakeBalanceResponse:
         """Get the stake balances."""
@@ -671,9 +674,10 @@ class ArmorWalletAPIClient:
         payload = data.model_dump(exclude_none=True)['rename_wallet_requests']
         return await self._api_call("POST", "wallets/rename/", payload)
     
-    async def get_candle_sticks(self, data: CandleStickRequest) -> Dict:
+    async def get_market_candle_data(self, data: CandleStickRequest) -> Dict:
         """Get the candle sticks."""
-        return await self._api_call("GET", f"tokens/candlesticks/{data.token_address}/?time_interval={data.time_frame}")
+        payload = data.model_dump(exclude_none=True)
+        return await self._api_call("POST", f"tokens/candles/", payload)
 
 # ------------------------------
 # Utility Functions
