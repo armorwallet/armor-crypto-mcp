@@ -125,9 +125,9 @@ class Wallet(WalletInfo):
 class TokenDetailsRequest(BaseModel):
     query: str = Field(description="token symbol or address")
     include_details: Optional[bool] = Field(default=False, description="returns only name and address if False, otherwise returns complete details. If `sortBy` is used, `include_details` should be True.")
-    sortBy: Optional[Literal['decimals', 'holders', 'jupiter', 'verified', 'liquidityUsd', ]] = Field(description="Use this ")
-    sortOrder: Optional[Literal['asc', 'desc']] = Field(default='desc', description="The order of the results")
-    limit: Optional[int] = Field(default=10, description="The number of results to return from the search. Use default unless specified")
+    sortBy: Optional[Literal['decimals', 'holders', 'jupiter', 'verified', 'liquidityUsd', 'marketCapUsd', 'priceUsd', 'totalBuys', 'totalSells', 'totalTransactions', 'volume_5m', 'volume', 'volume_15m', 'volume_30m', 'volume_1h', 'volume_6h', 'volume_12h', 'volume_24h']] = Field(description="Sort token data results by this field")
+    sortOrder: Optional[Literal['asc', 'desc']] = Field(default='desc', description="The order of the sorted results")
+    limit: Optional[int] = Field(default=10, description="The number of results to return from the search. Use default unless specified. Should not be over 30.")
 
 class TokenDetailsResponse(BaseModel):
     name: str = Field(description="name of the token")
