@@ -124,8 +124,10 @@ class Wallet(WalletInfo):
 
 class TokenDetailsRequest(BaseModel):
     query: str = Field(description="token symbol or address")
-    include_details: bool = Field(description="returns only name and address if False, otherwise returns complete details")
-
+    include_details: Optional[bool] = Field(default=False, description="returns only name and address if False, otherwise returns complete details. If `sortBy` is used, `include_details` should be True.")
+    sortBy: Optional[Literal['decimals', 'holders', 'jupiter', 'verified', 'liquidityUsd', ]] = Field(description="Use this ")
+    sortOrder: Optional[Literal['asc', 'desc']] = Field(default='desc', description="The order of the results")
+    limit: Optional[int] = Field(default=10, description="The number of results to return from the search. Use default unless specified")
 
 class TokenDetailsResponse(BaseModel):
     name: str = Field(description="name of the token")
@@ -259,7 +261,7 @@ class DCAOrderResponse(BaseModel):
     wallet_name: str = Field(description="name of the wallet")
     watchers: List[DCAWatcher] = Field(description="list of watchers for the DCA order")
     dca_transactions: List[dict] = Field(description="list of DCA transactions")  # Can be further typed if structure is known
-
+    created: str = Field(description="Linux timestamp of the creation of the order")
 
 class ListOrderRequest(BaseModel):
     status: Optional[Literal["OPEN", "CANCELLED", "EXPIRED", "COMPLETED", "FAILED", "IN_PROCESS"]] = Field(description="status of the orders, if specified filters results.")
@@ -364,6 +366,9 @@ class RenameWalletRequest(BaseModel):
 class CandleStickRequest(BaseModel):
     token_address: str = Field(description="Public address of the token")
     time_frame: Literal["1s", "5s", "15s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1mn"] = Field(default="1h", description="Time frame to get the candle sticks")
+    
+class PrivateKeyRequest(BaseModel):
+    key_type: Literal['private', 'mnemonic'] = Field(description="Whether to return the private or pnemonic key")
 
 # ------------------------------
 # Container Models for List Inputs
