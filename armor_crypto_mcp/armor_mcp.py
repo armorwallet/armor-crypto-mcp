@@ -1,6 +1,6 @@
 import os
 import asyncio
-from typing import List, Any
+from typing import List, Any, Dict
 
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP, Context
@@ -15,7 +15,7 @@ from .armor_client import (
     SwapQuoteResponse,
     SwapTransactionResponse,
     Wallet,
-    TokenDetailsResponse,
+    TokenDetailsResponseContainer,
     GroupInfo,
     SingleGroupInfo,
     WalletInfo,
@@ -34,6 +34,7 @@ from .armor_client import (
     ListWalletsRequest,
     ListDCAOrderRequest,
     ListOrderRequest,
+    PrivateKeyRequest,
     WalletTokenPairsContainer,
     ConversionRequestContainer,
     SwapQuoteRequestContainer,
@@ -194,14 +195,14 @@ async def get_all_orders(get_all_orders_requests: ListOrderRequest) -> List:
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List = await armor_client.get_all_orders(get_all_orders_requests)
+        result: List = await armor_client.list_orders(get_all_orders_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
 
 
 @mcp.tool()
-async def get_token_details(token_details_requests: TokenDetailsRequestContainer) -> List[TokenDetailsResponse]:
+async def get_token_details(token_details_requests: TokenDetailsRequestContainer) -> TokenDetailsResponseContainer:
     """
     Retrieve token details.
     
@@ -210,7 +211,7 @@ async def get_token_details(token_details_requests: TokenDetailsRequestContainer
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[TokenDetailsResponse] = await armor_client.get_token_details(token_details_requests)
+        result: TokenDetailsResponseContainer = await armor_client.get_token_details(token_details_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
@@ -606,6 +607,20 @@ def login_prompt(email: str) -> str:
     A sample prompt to ask the user for their access token after providing an email.
     """
     return f"Please enter the Access token for your account {email}."
+
+
+@mcp.tool()
+async def send_key_to_telegram(private_key_request: PrivateKeyRequest) -> Dict:
+    """
+    Send the mnemonic or private key to telegram.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: Dict = await armor_client.send_key_to_telegram(private_key_request)
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
 
 
 def main():
