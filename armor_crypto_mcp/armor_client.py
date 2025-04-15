@@ -223,7 +223,7 @@ class TransferTokenResponse(BaseModel):
 
 class ListDCAOrderRequest(BaseModel):
     status: Optional[Literal["COMPLETED", "OPEN", "CANCELLED"]] = Field(description="status of the DCA orders, if specified filters the results.")
-
+    limit: Optional[int] = Field(default=30, description="number of mostrecent results to return")
 
 class DCAOrderRequest(BaseModel):
     wallet: str = Field(description="name of the wallet")
@@ -265,6 +265,7 @@ class DCAOrderResponse(BaseModel):
 
 class ListOrderRequest(BaseModel):
     status: Optional[Literal["OPEN", "CANCELLED", "EXPIRED", "COMPLETED", "FAILED", "IN_PROCESS"]] = Field(description="status of the orders, if specified filters results.")
+    limit: Optional[int] = Field(default=30, description="number of most recent results to return")
 
 class CreateOrderRequest(BaseModel):
     wallet: str = Field(description="name of the wallet")
@@ -368,7 +369,8 @@ class CandleStickRequest(BaseModel):
     time_frame: Literal["1s", "5s", "15s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1mn"] = Field(default="1h", description="Time frame to get the candle sticks")
     
 class PrivateKeyRequest(BaseModel):
-    key_type: Literal['private', 'mnemonic'] = Field(description="Whether to return the private or pnemonic key")
+    wallet: str = Field(description="Name of the wallet to get the mnemonic or private key for")
+    key_type: Literal['PRIVATE_KEY', 'MNEMONIC'] = Field(description="Whether to return the private or mnemonic key")
 
 # ------------------------------
 # Container Models for List Inputs
@@ -433,6 +435,10 @@ class UnstakeTransactionRequestContainer(BaseModel):
 
 class TokenDetailsRequestContainer(BaseModel):
     token_details_requests: List[TokenDetailsRequest]
+
+
+class TokenDetailsResponseContainer(BaseModel):
+    token_details_responses: List[TokenDetailsResponse]
 
 
 class TransferTokensRequestContainer(BaseModel):
@@ -561,13 +567,12 @@ class ArmorWalletAPIClient:
         """Return all wallets with balances."""
         return await self._api_call("GET", f"wallets/?is_archived={data.is_archived}")
     
-    async def get_all_orders(self, data: ListOrderRequest) -> List:
-        """Return all orders."""
-        return await self._api_call("GET", f"transactions/order/?status={data.status}")
+    # async def get_all_orders(self, data: ListOrderRequest) -> List:
+    #     """Return all orders."""
+    #     return await self._api_call("GET", f"transactions/order/?status={data.status}")
 
-    async def get_token_details(self, data: TokenDetailsRequestContainer) -> List[TokenDetailsResponse]:
+    async def get_token_details(self, data: TokenDetailsRequestContainer) -> TokenDetailsResponseContainer:
         """Retrieve token details."""
-        # payload = [v.model_dump() for v in data.token_details_requests]
         payload = data.model_dump(exclude_none=True)['token_details_requests']
         return await self._api_call("POST", "tokens/search-token/", payload)
 
@@ -655,6 +660,7 @@ class ArmorWalletAPIClient:
         payload = data.model_dump(exclude_none=True)['create_order_requests']
         return await self._api_call("POST", "transactions/order/", payload)
     
+    # Error
     async def list_orders(self, data: ListOrderRequest) -> List[OrderResponse]:
         """List all orders."""
         payload = data.model_dump(exclude_none=True)
@@ -665,6 +671,7 @@ class ArmorWalletAPIClient:
         payload = data.model_dump(exclude_none=True)['cancel_order_requests']
         return await self._api_call("POST", "transactions/order/cancel/", payload) 
     
+    # Error
     async def top_trending_tokens(self, data: TopTrendingTokensRequest) -> List:
         """Get the top trending tokens."""
         payload = data.model_dump(exclude_none=True)
@@ -683,6 +690,11 @@ class ArmorWalletAPIClient:
         """Get the candle sticks."""
         payload = data.model_dump(exclude_none=True)
         return await self._api_call("POST", f"tokens/candles/", payload)
+    
+    async def send_key_to_telegram(self, data: PrivateKeyRequest) -> Dict:
+        """Send the mnemonic or private key to telegram."""
+        payload = data.model_dump(exclude_none=True)
+        return await self._api_call("POST", f"users/telegram/send-message/", payload)
 
 # ------------------------------
 # Utility Functions
