@@ -220,7 +220,6 @@ class TransferTokenResponse(BaseModel):
     transaction_url: str = Field(description="public url of the transaction")
     message: str = Field(description="message of the operation showing if tokens were transferred")
 
-
 class ListDCAOrderRequest(BaseModel):
     status: Optional[Literal["COMPLETED", "OPEN", "CANCELLED"]] = Field(description="status of the DCA orders, if specified filters the results.")
     limit: Optional[int] = Field(default=30, description="number of mostrecent results to return")
@@ -566,10 +565,6 @@ class ArmorWalletAPIClient:
     async def get_all_wallets(self, data: ListWalletsRequest) -> List[Wallet]:
         """Return all wallets with balances."""
         return await self._api_call("GET", f"wallets/?is_archived={data.is_archived}")
-    
-    # async def get_all_orders(self, data: ListOrderRequest) -> List:
-    #     """Return all orders."""
-    #     return await self._api_call("GET", f"transactions/order/?status={data.status}")
 
     async def get_token_details(self, data: TokenDetailsRequestContainer) -> TokenDetailsResponseContainer:
         """Retrieve token details."""
@@ -660,7 +655,6 @@ class ArmorWalletAPIClient:
         payload = data.model_dump(exclude_none=True)['create_order_requests']
         return await self._api_call("POST", "transactions/order/", payload)
     
-    # Error
     async def list_orders(self, data: ListOrderRequest) -> List[OrderResponse]:
         """List all orders."""
         payload = data.model_dump(exclude_none=True)
@@ -671,7 +665,6 @@ class ArmorWalletAPIClient:
         payload = data.model_dump(exclude_none=True)['cancel_order_requests']
         return await self._api_call("POST", "transactions/order/cancel/", payload) 
     
-    # Error
     async def top_trending_tokens(self, data: TopTrendingTokensRequest) -> List:
         """Get the top trending tokens."""
         payload = data.model_dump(exclude_none=True)
