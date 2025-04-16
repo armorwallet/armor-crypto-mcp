@@ -365,7 +365,10 @@ class RenameWalletRequest(BaseModel):
 
 class CandleStickRequest(BaseModel):
     token_address: str = Field(description="Public address of the token")
-    time_frame: Literal["1s", "5s", "15s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1mn"] = Field(default="1h", description="Time frame to get the candle sticks")
+    time_interval: Literal["1s", "5s", "15s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1mn"] = Field(default="1h", description="Time frame to get the candle sticks")
+    market_cap: bool = Field(default=False, description="Whether to return the market cap of the token")
+    time_from: str = Field(default=None, description="The time from which to start the candle sticks in ISO 8601 format e.g. 2025-04-14T11:31:40.497461Z")
+    time_to: str = Field(default=None, description="The time to which to end the candle sticks in ISO 8601 format e.g. 2025-04-14T11:31:40.497461Z")
     
 class PrivateKeyRequest(BaseModel):
     wallet: str = Field(description="Name of the wallet to get the mnemonic or private key for")
