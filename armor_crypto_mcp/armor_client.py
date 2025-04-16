@@ -637,7 +637,7 @@ class ArmorWalletAPIClient:
         """Create a DCA order."""
         # payload = [v.model_dump() for v in data.dca_order_requests]
         payload = data.model_dump(exclude_none=True)['dca_order_requests']
-        return await self._api_call("POST", "transactions/dca-order/", payload)
+        return await self._api_call("POST", "transactions/dca-order/create/", payload)
 
     async def list_dca_orders(self, data: ListDCAOrderRequest) -> List[DCAOrderResponse]:
         """List all DCA orders."""
@@ -653,7 +653,7 @@ class ArmorWalletAPIClient:
     async def create_order(self, data: CreateOrderRequestContainer) -> CreateOrderResponseContainer:
         """Create a order."""
         payload = data.model_dump(exclude_none=True)['create_order_requests']
-        return await self._api_call("POST", "transactions/order/", payload)
+        return await self._api_call("POST", "transactions/order/create/", payload)
     
     async def list_orders(self, data: ListOrderRequest) -> List[OrderResponse]:
         """List all orders."""
