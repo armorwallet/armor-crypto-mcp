@@ -588,7 +588,7 @@ async def rename_wallets(rename_wallet_requests: RenameWalletRequestContainer) -
 @mcp.tool()
 async def get_token_candle_data(candle_stick_requests: CandleStickRequest) -> List:
     """
-    Get the candle sticks.
+    Get candle data about any token for analysis.
 
     Expects a CandleStickRequest, returns a list of candle sticks.
     """
