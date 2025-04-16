@@ -127,7 +127,7 @@ class TokenDetailsRequest(BaseModel):
     include_details: Optional[bool] = Field(default=False, description="returns only name and address if False, otherwise returns complete details. If `sortBy` is used, `include_details` should be True.")
     sortBy: Optional[Literal['decimals', 'holders', 'jupiter', 'verified', 'liquidityUsd', 'marketCapUsd', 'priceUsd', 'totalBuys', 'totalSells', 'totalTransactions', 'volume_5m', 'volume', 'volume_15m', 'volume_30m', 'volume_1h', 'volume_6h', 'volume_12h', 'volume_24h']] = Field(description="Sort token data results by this field")
     sortOrder: Optional[Literal['asc', 'desc']] = Field(default='desc', description="The order of the sorted results")
-    limit: Optional[int] = Field(default=10, description="The number of results to return from the search. Use default unless specified. Should not be over 30.")
+    limit: Optional[int] = Field(default=1, description="The number of results to return from the search. Use default unless specified. Should not be over 30 if looking up multiple tokens.")
 
 class TokenDetailsResponse(BaseModel):
     name: str = Field(description="name of the token")
@@ -364,7 +364,7 @@ class RenameWalletRequest(BaseModel):
 
 
 class CandleStickRequest(BaseModel):
-    token_address: str = Field(description="Public address of the token")
+    token_address: str = Field(description="Public mint address of the token. To get the address from a token symbol use `get_token_details`")
     time_interval: Literal["1s", "5s", "15s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1mn"] = Field(default="1h", description="Time frame to get the candle sticks. Use larger candle time frames over larger time windows to keep returned candles minimal")
     time_from: str = Field(description="The time from which to start the candle data in ISO 8601 format. Attempt to change this to keep number of candles returned under 64.")
     time_to: Optional[str] = Field(default=None, description="The time to end the candle data in ISO 8601 format. Use only for historic analysis.")
