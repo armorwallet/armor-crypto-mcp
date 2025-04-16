@@ -53,13 +53,13 @@ class SwapQuoteRequest(BaseModel):
 class StakeQuoteRequest(BaseModel):
     from_wallet: str = Field(description="The name of the wallet that input_token is in.")
     input_token: str = "So11111111111111111111111111111111111111112"  # Hardcoded SOL token address
-    output_token: str = "jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v"
+    output_token: str = Field(description="the public mint address of the output liquid staking derivative token to stake.") # "jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v"
     input_amount: float = Field(description="input amount to swap")
 
 
 class UnstakeQuoteRequest(BaseModel):
     from_wallet: str = Field(description="The name of the wallet that input_token is in.")
-    input_token: str = "jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v"
+    input_token: str = Field(description="the public mint address of the input liquid staking derivative token to unstake.") # "jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v"
     output_token: str = "So11111111111111111111111111111111111111112"
     input_amount: float = Field(description="input amount to swap")
 

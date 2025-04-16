@@ -101,7 +101,7 @@ To use the Armor MCP with your agent, you need the following configuration, repl
   "mcpServers": {
     "armor-crypto-mcp": {
       "command": "uvx",
-      "args": ["armor-crypto-mcp"],
+      "args": ["armor-crypto-mcp@latest", "--version"],
       "env": {
         "ARMOR_API_KEY": "<PUT-YOUR-KEY-HERE>"
       }
