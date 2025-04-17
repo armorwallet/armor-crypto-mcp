@@ -40,6 +40,8 @@ from .armor_client import (
     SwapQuoteRequestContainer,
     SwapTransactionRequestContainer,
     TokenDetailsRequestContainer,
+    TokenSearchRequestContainer,
+    TokenSearchResponseContainer,
     TransferTokensRequestContainer,
     DCAOrderRequestContainer,
     CancelDCAOrderRequestContainer,
@@ -196,6 +198,20 @@ async def get_all_orders(get_all_orders_requests: ListOrderRequest) -> List:
         return [{"error": "Not logged in"}]
     try:
         result: List = await armor_client.list_orders(get_all_orders_requests)
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
+    
+
+@mcp.tool()
+async def get_token_address(token_address_requests: TokenSearchRequestContainer) -> TokenSearchResponseContainer:
+    """
+    Get the token address for a token symbol or name.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: TokenSearchResponseContainer = await armor_client.get_token_address(token_address_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
