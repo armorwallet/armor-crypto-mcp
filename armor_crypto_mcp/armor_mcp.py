@@ -220,7 +220,7 @@ async def get_token_address(token_details_requests: TokenDetailsRequestContainer
 @mcp.tool()
 async def get_token_details(token_search_requests: TokenSearchRequestContainer) -> TokenSearchResponseContainer:
     """
-    Retrieve token details.
+    Search and retrieve details about multiple tokens
     
     Expects a TokenDetailsRequestContainer, returns a list of TokenDetailsResponse.
     """

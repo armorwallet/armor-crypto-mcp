@@ -591,7 +591,7 @@ class ArmorWalletAPIClient:
         return await self._api_call("POST", "tokens/search-token/", payload)
 
     async def get_token_details(self, data: TokenDetailsRequestContainer) -> TokenDetailsResponseContainer:
-        """Retrieve address of token."""
+        """Retrieve the mint address of token."""
         payload = data.model_dump(exclude_none=True)['token_details_requests']
         return await self._api_call("POST", "tokens/token-detail/", payload)
 
