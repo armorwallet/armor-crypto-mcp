@@ -122,23 +122,22 @@ class Wallet(WalletInfo):
     balances: List[WalletBalance] = Field(description="list of balances of the wallet")
 
 
-class TokenSearchRequest(BaseModel):
+class TokenDetailsRequest(BaseModel):
     query: str = Field(description="token symbol or address")
 
 
-class TokenSearchResponse(BaseModel):
-    name: str = Field(description="name of the token")
+class TokenDetailsResponse(BaseModel):
     symbol: str = Field(description="symbol of the token")
     mint_address: str = Field(description="mint address of the token")
 
 
-class TokenDetailsRequest(BaseModel):
+class TokenSearchRequest(BaseModel):
     query: str = Field(description="token symbol or address")
     sort_by: Optional[Literal['decimals', 'holders', 'jupiter', 'verified', 'liquidityUsd', 'marketCapUsd', 'priceUsd', 'totalBuys', 'totalSells', 'totalTransactions', 'volume_5m', 'volume', 'volume_15m', 'volume_30m', 'volume_1h', 'volume_6h', 'volume_12h', 'volume_24h']] = Field(description="Sort token data results by this field")
     sort_order: Optional[Literal['asc', 'desc']] = Field(default='desc', description="The order of the sorted results")
     limit: Optional[int] = Field(default=1, description="The number of results to return from the search. Use default unless specified. Should not be over 30 if looking up multiple tokens.")
 
-class TokenDetailsResponse(BaseModel):
+class TokenSearchResponse(BaseModel):
     name: str = Field(description="name of the token")
     symbol: str = Field(description="symbol of the token")
     mint_address: Optional[str] = Field(description="mint address of the token")
@@ -586,13 +585,13 @@ class ArmorWalletAPIClient:
         """Return all wallets with balances."""
         return await self._api_call("GET", f"wallets/?is_archived={data.is_archived}")
     
-    async def get_token_address(self, data: TokenSearchRequestContainer) -> TokenSearchResponseContainer:
-        """Get the token address for a token symbol or name."""
+    async def search_token(self, data: TokenSearchRequestContainer) -> TokenSearchResponseContainer:
+        """Get details of a token."""
         payload = data.model_dump(exclude_none=True)['token_search_requests']
         return await self._api_call("POST", "tokens/search-token/", payload)
 
     async def get_token_details(self, data: TokenDetailsRequestContainer) -> TokenDetailsResponseContainer:
-        """Retrieve token details."""
+        """Retrieve address of token."""
         payload = data.model_dump(exclude_none=True)['token_details_requests']
         return await self._api_call("POST", "tokens/token-detail/", payload)
 
