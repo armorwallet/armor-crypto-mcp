@@ -204,21 +204,21 @@ async def get_all_orders(get_all_orders_requests: ListOrderRequest) -> List:
     
 
 @mcp.tool()
-async def get_token_address(token_address_requests: TokenSearchRequestContainer) -> TokenSearchResponseContainer:
+async def get_token_address(token_details_requests: TokenDetailsRequestContainer) -> TokenDetailsResponseContainer:
     """
     Get the token address for a token symbol or name.
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: TokenSearchResponseContainer = await armor_client.get_token_address(token_address_requests)
+        result: TokenDetailsResponseContainer = await armor_client.get_token_details(token_details_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
 
 
 @mcp.tool()
-async def get_token_details(token_details_requests: TokenDetailsRequestContainer) -> TokenDetailsResponseContainer:
+async def get_token_details(token_search_requests: TokenSearchRequestContainer) -> TokenSearchResponseContainer:
     """
     Retrieve token details.
     
@@ -227,7 +227,7 @@ async def get_token_details(token_details_requests: TokenDetailsRequestContainer
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: TokenDetailsResponseContainer = await armor_client.get_token_details(token_details_requests)
+        result: TokenSearchResponseContainer = await armor_client.search_token(token_search_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
