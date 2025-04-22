@@ -86,7 +86,7 @@ async def get_armor_mcp_version():
 @mcp.tool()
 async def wait_a_moment(seconds:float):
     """Wait for some short amount of time, no more than 10 seconds"""
-    await asyncio.wait(seconds)
+    await asyncio.sleep(seconds)
     return {"waited": seconds}
 
 from datetime import datetime, timezone
