@@ -62,6 +62,8 @@ from .armor_client import (
     StakeTransactionRequestContainer,
     UnstakeTransactionRequestContainer,
     RenameWalletRequestContainer,
+    ListDCAOrderResponseContainer,
+    ListOrderResponseContainer,
 )
 
 # Load environment variables (e.g. BASE_API_URL, etc.)
@@ -188,7 +190,7 @@ async def get_all_wallets(get_all_wallets_requests: ListWalletsRequest) -> List[
     
 
 @mcp.tool()
-async def get_all_orders(get_all_orders_requests: ListOrderRequest) -> List:
+async def get_all_orders(get_all_orders_requests: ListOrderRequest) -> ListOrderResponseContainer:
     """
     Retrieve all limit and stop loss orders.
     
@@ -197,7 +199,7 @@ async def get_all_orders(get_all_orders_requests: ListOrderRequest) -> List:
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List = await armor_client.list_orders(get_all_orders_requests)
+        result: ListOrderResponseContainer = await armor_client.list_orders(get_all_orders_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
@@ -426,7 +428,7 @@ async def create_dca_order(dca_order_requests: DCAOrderRequestContainer) -> List
 
 
 @mcp.tool()
-async def list_dca_orders(list_dca_order_requests: ListDCAOrderRequest) -> List[DCAOrderResponse]:
+async def list_dca_orders(list_dca_order_requests: ListDCAOrderRequest) -> ListDCAOrderResponseContainer:
     """
     List all DCA orders.
     
@@ -435,7 +437,7 @@ async def list_dca_orders(list_dca_order_requests: ListDCAOrderRequest) -> List[
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[DCAOrderResponse] = await armor_client.list_dca_orders(list_dca_order_requests)
+        result: ListDCAOrderResponseContainer = await armor_client.list_dca_orders(list_dca_order_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]

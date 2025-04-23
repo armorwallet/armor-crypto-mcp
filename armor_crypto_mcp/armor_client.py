@@ -255,6 +255,12 @@ class DCAWatcher(BaseModel):
     delta_percentage: float = Field(description="percentage of the delta")
 
 
+class TokenData(BaseModel):
+    name: str = Field(description="name of the token")
+    symbol: str = Field(description="symbol of the token")
+    mint_address: str = Field(description="mint address of the token")
+
+
 class DCAOrderResponse(BaseModel):
     id: str = Field(description="id of the DCA order")
     amount: float = Field(description="amount of tokens to invest")
@@ -263,16 +269,18 @@ class DCAOrderResponse(BaseModel):
     total_cycles: int = Field(description="total number of cycles")
     human_readable_expiry: str = Field(description="human readable expiry date of the DCA order")
     status: str = Field(description="status of the DCA order")
-    input_token_address: str = Field(description="public address of the input token. To get the address from a token symbol use `get_token_details`")
-    output_token_address: str = Field(description="public address of the output token. To get the address from a token symbol use `get_token_details`")
+    input_token_data: TokenData = Field(description="details of the input token")
+    output_token_data: TokenData = Field(description="details of the output token")
     wallet_name: str = Field(description="name of the wallet")
     watchers: List[DCAWatcher] = Field(description="list of watchers for the DCA order")
     dca_transactions: List[dict] = Field(description="list of DCA transactions")  # Can be further typed if structure is known
     created: str = Field(description="Linux timestamp of the creation of the order")
 
+
 class ListOrderRequest(BaseModel):
     status: Optional[Literal["OPEN", "CANCELLED", "EXPIRED", "COMPLETED", "FAILED", "IN_PROCESS"]] = Field(description="status of the orders, if specified filters results.")
     limit: Optional[int] = Field(default=30, description="number of most recent results to return")
+
 
 class CreateOrderRequest(BaseModel):
     wallet: str = Field(description="name of the wallet")
@@ -302,8 +310,8 @@ class OrderResponse(BaseModel):
     id: str = Field(description="unique identifier of the order")
     amount: float = Field(description="amount of tokens to invest")
     status: str = Field(description="current status of the order")
-    input_token_address: str = Field(description="public address of the input token")
-    output_token_address: str = Field(description="public address of the output token")
+    input_token_data: TokenData = Field(description="details of the input token")
+    output_token_data: TokenData = Field(description="details of the output token")
     wallet_name: str = Field(description="name of the wallet")
     order_type: Literal["LIMIT", "STOP_LOSS", "STOP_LIMIT"] = Field(description="type of the order")
     expiry_time: str = Field(description="expiry time of the order in ISO format")
@@ -489,6 +497,12 @@ class CancelOrderResponseContainer(BaseModel):
 class RenameWalletRequestContainer(BaseModel):
     rename_wallet_requests: List[RenameWalletRequest]
 
+class ListDCAOrderResponseContainer(BaseModel):
+    list_dca_order_responses: List[DCAOrderResponse]
+
+class ListOrderResponseContainer(BaseModel):
+    list_order_responses: List[OrderResponse]
+
 # ------------------------------
 # API Client
 # ------------------------------
@@ -663,7 +677,7 @@ class ArmorWalletAPIClient:
         payload = data.model_dump(exclude_none=True)['dca_order_requests']
         return await self._api_call("POST", "transactions/dca-order/create/", payload)
 
-    async def list_dca_orders(self, data: ListDCAOrderRequest) -> List[DCAOrderResponse]:
+    async def list_dca_orders(self, data: ListDCAOrderRequest) -> ListDCAOrderResponseContainer:
         """List all DCA orders."""
         payload = data.model_dump(exclude_none=True)
         return await self._api_call("POST", f"transactions/dca-order/", payload)
@@ -679,7 +693,7 @@ class ArmorWalletAPIClient:
         payload = data.model_dump(exclude_none=True)['create_order_requests']
         return await self._api_call("POST", "transactions/order/create/", payload)
     
-    async def list_orders(self, data: ListOrderRequest) -> List[OrderResponse]:
+    async def list_orders(self, data: ListOrderRequest) -> ListOrderResponseContainer:
         """List all orders."""
         payload = data.model_dump(exclude_none=True)
         return await self._api_call("POST", f"transactions/order/", payload)
