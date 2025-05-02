@@ -597,7 +597,6 @@ class ArmorWalletAPIClient:
     
     async def search_token(self, data: TokenSearchRequest) -> TokenSearchResponseContainer:
         """Get details of a token."""
-        # payload = data.model_dump(exclude_none=True)['token_search_requests']
         payload = data.model_dump(exclude_none=True)
         return await self._api_call("POST", "tokens/search-token/", payload)
 
