@@ -40,7 +40,7 @@ from .armor_client import (
     SwapQuoteRequestContainer,
     SwapTransactionRequestContainer,
     TokenDetailsRequestContainer,
-    TokenSearchRequestContainer,
+    TokenSearchRequest,
     TokenSearchResponseContainer,
     TransferTokensRequestContainer,
     DCAOrderRequestContainer,
@@ -206,25 +206,29 @@ async def get_all_orders(get_all_orders_requests: ListOrderRequest) -> ListOrder
     
 
 @mcp.tool()
-async def get_token_address(token_details_requests: TokenDetailsRequestContainer) -> TokenDetailsResponseContainer:
+async def search_official_token_address(token_details_requests: TokenDetailsRequestContainer) -> TokenDetailsResponseContainer:
     """
-    Get the token address for a token symbol or name.
+    Get the official token address and symbol for a token symbol or token address.
+    Try to use this first to get address and symbol of coin. If not found, use search_token_details to get details.
+
+    Expects a TokenDetailsRequestContainer, returns a TokenDetailsResponseContainer.
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: TokenDetailsResponseContainer = await armor_client.get_token_details(token_details_requests)
+        result: TokenDetailsResponseContainer = await armor_client.get_official_token_address(token_details_requests)
         return result
     except Exception as e:
         return [{"error": str(e)}]
 
 
 @mcp.tool()
-async def get_token_details(token_search_requests: TokenSearchRequestContainer) -> TokenSearchResponseContainer:
+async def search_token_details(token_search_requests: TokenSearchRequest) -> TokenSearchResponseContainer:
     """
-    Search and retrieve details about multiple tokens
+    Search and retrieve details about single token.
+    If only address or symbol is needed, use get_official_token_address first.
     
-    Expects a TokenDetailsRequestContainer, returns a list of TokenDetailsResponse.
+    Expects a TokenSearchRequest, returns a list of TokenDetailsResponse.
     """
     if not armor_client:
         return [{"error": "Not logged in"}]

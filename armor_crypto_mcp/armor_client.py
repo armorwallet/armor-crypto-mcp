@@ -135,7 +135,7 @@ class TokenSearchRequest(BaseModel):
     query: str = Field(description="token symbol or address")
     sort_by: Optional[Literal['decimals', 'holders', 'jupiter', 'verified', 'liquidityUsd', 'marketCapUsd', 'priceUsd', 'totalBuys', 'totalSells', 'totalTransactions', 'volume_5m', 'volume', 'volume_15m', 'volume_30m', 'volume_1h', 'volume_6h', 'volume_12h', 'volume_24h']] = Field(description="Sort token data results by this field")
     sort_order: Optional[Literal['asc', 'desc']] = Field(default='desc', description="The order of the sorted results")
-    limit: Optional[int] = Field(default=1, description="The number of results to return from the search. Use default unless specified. Should not be over 30 if looking up multiple tokens.")
+    limit: Optional[int] = Field(default=10, description="The number of results to return from the search. Use default unless specified. Should not be over 30 if looking up multiple tokens.")
 
 class TokenSearchResponse(BaseModel):
     name: str = Field(description="name of the token")
@@ -451,10 +451,6 @@ class UnstakeTransactionRequestContainer(BaseModel):
     unstake_transaction_requests: List[UnstakeTransactionRequest]
 
 
-class TokenSearchRequestContainer(BaseModel):
-    token_search_requests: List[TokenSearchRequest]
-
-
 class TokenSearchResponseContainer(BaseModel):
     token_search_responses: List[TokenSearchResponse]
 
@@ -599,15 +595,15 @@ class ArmorWalletAPIClient:
         """Return all wallets with balances."""
         return await self._api_call("GET", f"wallets/?is_archived={data.is_archived}")
     
-    async def search_token(self, data: TokenSearchRequestContainer) -> TokenSearchResponseContainer:
+    async def search_token(self, data: TokenSearchRequest) -> TokenSearchResponseContainer:
         """Get details of a token."""
-        payload = data.model_dump(exclude_none=True)['token_search_requests']
+        payload = data.model_dump(exclude_none=True)
         return await self._api_call("POST", "tokens/search-token/", payload)
 
-    async def get_token_details(self, data: TokenDetailsRequestContainer) -> TokenDetailsResponseContainer:
+    async def get_official_token_address(self, data: TokenDetailsRequestContainer) -> TokenDetailsResponseContainer:
         """Retrieve the mint address of token."""
         payload = data.model_dump(exclude_none=True)['token_details_requests']
-        return await self._api_call("POST", "tokens/token-detail/", payload)
+        return await self._api_call("POST", "tokens/official-token-detail/", payload)
 
     async def list_groups(self) -> List[GroupInfo]:
         """Return a list of wallet groups."""
