@@ -216,7 +216,6 @@ async def search_official_token_address(token_details_requests: TokenDetailsRequ
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        # TODO: change function name
         result: TokenDetailsResponseContainer = await armor_client.get_official_token_address(token_details_requests)
         return result
     except Exception as e:
