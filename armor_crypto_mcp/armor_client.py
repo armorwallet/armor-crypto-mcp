@@ -289,12 +289,10 @@ class CreateOrderRequest(BaseModel):
     amount: float = Field(description="amount of input token to invest")
     strategy_duration: int = Field(description="duration of the order")
     strategy_duration_unit: Literal["MINUTE", "HOUR", "DAY", "WEEK", "MONTH", "YEAR"] = Field(description="unit of the duration of the order")
-    stop_loss_watch_field: Optional[Literal["liquidity", "marketCap", "price"]] = Field(description="only needed when order_type field is STOP_LOSS or STOP_LIMIT")
-    limit_watch_field: Optional[Literal["liquidity", "marketCap", "price"]] = Field(description="only needed when order_type field is LIMIT or STOP_LIMIT")
-    token_address_watcher: str = Field(description="public address of the token to watch")
-    stop_loss_delta_percentage: Optional[float] = Field(description="percentage for stop loss delta. only needed when order_type field is STOP_LOSS or STOP_LIMIT")
-    limit_delta_percentage: Optional[float] = Field(description="percentage for limit delta. only needed when order_type field is LIMIT or STOP_LIMIT")
-    order_type: Literal["LIMIT", "STOP_LOSS", "STOP_LIMIT"] = Field(description="type of the order. Wether it is a limit order, stop loss order or stop limit order")
+    watch_field: Literal["liquidity", "marketCap", "price"] = Field(description="field to watch to execute the order")
+    token_address_watcher: Optional[str] = Field(description="public address of the token to watch. should be output token for limit orders and input token for stop loss and take profit orders")
+    delta_percentage: float = Field(description="delta percentage to execute the order")
+    order_type: Literal["LIMIT", "STOP_LOSS", "TAKE_PROFIT"] = Field(description="type of the order. Wether it is a limit order (buy event), stop loss order (sell event) or take profit order (sell event)")
 
 
 class OrderWatcher(BaseModel):
@@ -313,10 +311,11 @@ class OrderResponse(BaseModel):
     input_token_data: TokenData = Field(description="details of the input token")
     output_token_data: TokenData = Field(description="details of the output token")
     wallet_name: str = Field(description="name of the wallet")
-    order_type: Literal["LIMIT", "STOP_LOSS", "STOP_LIMIT"] = Field(description="type of the order")
+    order_type: Literal["LIMIT", "STOP_LOSS", "TAKE_PROFIT"] = Field(description="type of the order")
     expiry_time: str = Field(description="expiry time of the order in ISO format")
     watchers: List[OrderWatcher] = Field(description="list of watchers for the order")
     transaction: Optional[dict] = Field(description="transaction details if any", default=None)
+    created: str = Field(description="ISO 8601 timestamp of the creation of the order")
 
 
 class CancelOrderRequest(BaseModel):
