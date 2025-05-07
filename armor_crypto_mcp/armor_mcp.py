@@ -93,9 +93,9 @@ async def wait_a_moment(seconds:float):
 
 from datetime import datetime, timezone
 @mcp.tool()
-async def get_current_time():
+async def get_current_time() -> Dict:
     """Gets the current time and date"""
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    return {"current_time": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")}
 
 @mcp.tool()
 async def calculator(expression:str, variables:dict[str, Any]):
