@@ -144,7 +144,7 @@ async def calculate_token_conversion(conversion_requests: ConversionRequestConta
 @mcp.tool()
 async def swap_quote(swap_quote_requests: SwapQuoteRequestContainer) -> List[SwapQuoteResponse]:
     """
-    Retrieve a swap quote.
+    Retrieve a swap quote. Be sure to add slippage!
     
     Expects a SwapQuoteRequestContainer, returns a list of SwapQuoteResponse.
     """
