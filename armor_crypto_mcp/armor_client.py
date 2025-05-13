@@ -290,10 +290,10 @@ class CreateOrderRequest(BaseModel):
     strategy_duration: int = Field(description="duration of the order")
     strategy_duration_unit: Literal["MINUTE", "HOUR", "DAY", "WEEK", "MONTH", "YEAR"] = Field(description="unit of the duration of the order")
     watch_field: Literal["liquidity", "marketCap", "price"] = Field(description="field to watch to execute the order")
-    token_address_watcher: Optional[str] = Field(description="public address of the token to watch. should be output token for limit orders and input token for stop loss and take profit orders")
-    delta_percentage: float = Field(description="delta percentage to execute the order")
-    order_type: Literal["LIMIT", "STOP_LOSS", "TAKE_PROFIT"] = Field(description="type of the order. Wether it is a limit order (buy event), stop loss order (sell event) or take profit order (sell event)")
-
+    direction: Literal["ABOVE", "BELOW"] = Field(description="direction of the order")
+    token_address_watcher: str = Field(description="public address of the token to watch. should be output token for limit orders and input token for stop loss and take profit orders")
+    target_value: Optional[float] = Field(description="target value to execute the order. You must always specify a target value or delta percentage.")
+    delta_percentage: Optional[float] = Field(description="delta percentage to execute the order. You must always specify a target value or delta percentage.")
 
 class OrderWatcher(BaseModel):
     watch_field: Literal["liquidity", "marketCap", "price"] = Field(description="field being watched for a delta")
@@ -311,7 +311,7 @@ class OrderResponse(BaseModel):
     input_token_data: TokenData = Field(description="details of the input token")
     output_token_data: TokenData = Field(description="details of the output token")
     wallet_name: str = Field(description="name of the wallet")
-    order_type: Literal["LIMIT", "STOP_LOSS", "TAKE_PROFIT"] = Field(description="type of the order")
+    execution_type: Literal["LIMIT", "STOP_LOSS", "TAKE_PROFIT"] = Field(description="type of the order")
     expiry_time: str = Field(description="expiry time of the order in ISO format")
     watchers: List[OrderWatcher] = Field(description="list of watchers for the order")
     transaction: Optional[dict] = Field(description="transaction details if any", default=None)
