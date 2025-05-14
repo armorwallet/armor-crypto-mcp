@@ -6,6 +6,6 @@ staking, DeFi operations, swaps, bridging, wallet management, and for developing
 trading strategies through dynamic DCA.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 
