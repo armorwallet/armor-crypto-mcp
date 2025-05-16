@@ -107,7 +107,7 @@ async def calculator(expression:str, variables:dict[str, Any]):
 
     Custom variables can be passed via the 'variables' dict, including lists for time series data.
     """
-    return calculate(expression, variables)
+    return {'result': calculate(expression, variables)}
 
 @mcp.tool()
 async def get_wallet_token_balance(wallet_token_pairs: WalletTokenPairsContainer) -> List[WalletTokenBalance]:
