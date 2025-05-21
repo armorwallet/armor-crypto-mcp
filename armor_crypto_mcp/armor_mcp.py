@@ -64,6 +64,7 @@ from .armor_client import (
     RenameWalletRequestContainer,
     ListDCAOrderResponseContainer,
     ListOrderResponseContainer,
+    ListChainResponse,
 )
 
 # Load environment variables (e.g. BASE_API_URL, etc.)
@@ -74,7 +75,7 @@ mcp = FastMCP("Armor Crypto MCP")
 
 # Global variable to hold the authenticated Armor API client
 ACCESS_TOKEN = os.getenv('ARMOR_API_KEY') or os.getenv('ARMOR_ACCESS_TOKEN')
-BASE_API_URL = os.getenv('ARMOR_API_URL') or 'https://app.armorwallet.ai/api/v1'
+BASE_API_URL = os.getenv('ARMOR_API_URL') or 'https://app.armorwallet.ai/api'
 
 armor_client = ArmorWalletAPIClient(ACCESS_TOKEN, base_api_url=BASE_API_URL) #, log_path='armor_client.log')
 
@@ -234,6 +235,22 @@ async def search_token_details(token_search_requests: TokenSearchRequest) -> Tok
         return [{"error": "Not logged in"}]
     try:
         result: TokenSearchResponseContainer = await armor_client.search_token(token_search_requests)
+        return result
+    except Exception as e:
+        return [{"error": str(e)}]
+    
+
+@mcp.tool()
+async def list_chains() -> List[ListChainResponse]:
+    """
+    List all available chains.
+    
+    Returns a list of ListChainResponse.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: List[ListChainResponse] = await armor_client.get_chains()
         return result
     except Exception as e:
         return [{"error": str(e)}]
