@@ -132,7 +132,7 @@ class TokenDetailsResponse(BaseModel):
 
 
 class TokenSearchRequest(BaseModel):
-    query: str = Field(description="token name, symbol or address")
+    query: Optional[str] = Field(default=None, description="token name, symbol or address")
     chains: Optional[List[str]] = Field(default=None, description="List of chain IDs to filter by. Only use if specified. get chain ids using `list_chains` tool")
     sort_by: Optional[Literal[
         "age", "buyCount1", "buyCount4", "buyCount5m", "buyCount12", "buyCount24",
