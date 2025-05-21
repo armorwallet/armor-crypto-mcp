@@ -7,7 +7,7 @@ from mcp.server.fastmcp import FastMCP, Context
 
 
 # Import base models
-from .armor_client import (
+from armor_client import (
     ArmorWalletAPIClient,
     calculate,
     WalletTokenBalance,
@@ -64,7 +64,7 @@ from .armor_client import (
     RenameWalletRequestContainer,
     ListDCAOrderResponseContainer,
     ListOrderResponseContainer,
-    ListChainResponse,
+    ListChainResponseContainer,
 )
 
 # Load environment variables (e.g. BASE_API_URL, etc.)
@@ -241,7 +241,7 @@ async def search_token_details(token_search_requests: TokenSearchRequest) -> Tok
     
 
 @mcp.tool()
-async def list_chains() -> List[ListChainResponse]:
+async def list_chains() -> ListChainResponseContainer:
     """
     List all available chains.
     
@@ -250,7 +250,7 @@ async def list_chains() -> List[ListChainResponse]:
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: List[ListChainResponse] = await armor_client.get_chains()
+        result: ListChainResponseContainer = await armor_client.get_chains()
         return result
     except Exception as e:
         return [{"error": str(e)}]
