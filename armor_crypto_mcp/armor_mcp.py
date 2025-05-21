@@ -192,7 +192,7 @@ async def get_all_wallets(get_all_wallets_requests: ListWalletsRequest) -> List[
 @mcp.tool()
 async def get_all_orders(get_all_orders_requests: ListOrderRequest) -> ListOrderResponseContainer:
     """
-    Retrieve all limit and stop loss orders.
+    Retrieve all limit, take profit and stop loss orders.
     
     Returns a list of orders.
     """
@@ -466,7 +466,7 @@ async def cancel_dca_order(cancel_dca_order_requests: CancelDCAOrderRequestConta
 @mcp.tool()
 async def create_order(create_order_requests: CreateOrderRequestContainer) -> CreateOrderResponseContainer:
     """
-    Create a order. Can be a limit or stop loss order
+    Create a order. Can be a limit, take profit or stop loss order.
     
     Expects a CreateOrderRequestContainer, returns a CreateOrderResponseContainer.
     """
@@ -482,7 +482,7 @@ async def create_order(create_order_requests: CreateOrderRequestContainer) -> Cr
 @mcp.tool()
 async def cancel_order(cancel_order_requests: CancelOrderRequestContainer) -> CancelOrderResponseContainer:
     """
-    Cancel a limit or stop loss order.
+    Cancel a limit, take profit or stop loss order.
     
     Expects a CancelOrderRequestContainer, returns a CancelOrderResponseContainer.
     """
