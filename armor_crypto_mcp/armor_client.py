@@ -356,10 +356,10 @@ class AddWalletToGroupRequest(BaseModel):
     wallet: str = Field(description="Name of the wallet to add to the group")
 
 class ArchiveWalletGroupRequest(BaseModel):
-    group_name: str = Field(description="Name of the group to archive")
+    group: str = Field(description="Name of the group to archive")
 
 class UnarchiveWalletGroupRequest(BaseModel):
-    group_name: str = Field(description="Name of the group to unarchive")
+    group: str = Field(description="Name of the group to unarchive")
 
 class RemoveWalletsFromGroupRequest(BaseModel):
     group: str = Field(description="Name of the group to remove wallets from")
