@@ -131,42 +131,6 @@ class TokenDetailsResponse(BaseModel):
     mint_address: str = Field(description="mint address of the token")
 
 
-class TokenSearchRequest(BaseModel):
-    query: str = Field(description="token symbol or address")
-    sort_by: Optional[Literal['decimals', 'holders', 'jupiter', 'verified', 'liquidityUsd', 'marketCapUsd', 'priceUsd', 'totalBuys', 'totalSells', 'totalTransactions', 'volume_5m', 'volume', 'volume_15m', 'volume_30m', 'volume_1h', 'volume_6h', 'volume_12h', 'volume_24h']] = Field(description="Sort token data results by this field")
-    sort_order: Optional[Literal['asc', 'desc']] = Field(default='desc', description="The order of the sorted results")
-    limit: Optional[int] = Field(default=10, description="The number of results to return from the search. Use default unless specified. Should not be over 30 if looking up multiple tokens.")
-
-class TokenSearchResponse(BaseModel):
-    name: str = Field(description="name of the token")
-    symbol: str = Field(description="symbol of the token")
-    mint_address: Optional[str] = Field(description="mint address of the token")
-    decimals: Optional[int] = Field(description="number of decimals of the token, returns only if include_details is True")
-    image: Optional[str] = Field(description="image url of the token, returns only if include_details is True")
-    holders: Optional[int] = Field(description="number of holders of the token, returns only if include_details is True")
-    jupiter: Optional[bool] = Field(description="whether the token is supported by Jupiter, returns only if include_details is True")
-    verified: Optional[bool] = Field(description="whether the token is verified, returns only if include_details is True")
-    liquidityUsd: Optional[float] = Field(description="liquidity of the token in USD, returns only if include_details is True")
-    marketCapUsd: Optional[float] = Field(description="market cap of the token in USD, returns only if include_details is True")
-    priceUsd: Optional[float] = Field(description="price of the token in USD, returns only if include_details is True")
-    lpBurn: Optional[float] = Field(description="lp burn of the token, returns only if include_details is True")
-    market: Optional[str] = Field(description="market of the token, returns only if include_details is True")
-    freezeAuthority: Optional[str] = Field(description="freeze authority of the token, returns only if include_details is True")
-    mintAuthority: Optional[str] = Field(description="mint authority of the token, returns only if include_details is True")
-    poolAddress: Optional[str] = Field(description="pool address of the token, returns only if include_details is True")
-    totalBuys: Optional[int] = Field(description="total number of buys of the token, returns only if include_details is True")
-    totalSells: Optional[int] = Field(description="total number of sells of the token, returns only if include_details is True")
-    totalTransactions: Optional[int] = Field(description="total number of transactions of the token, returns only if include_details is True")
-    volume: Optional[float] = Field(description="volume of the token, returns only if include_details is True")
-    volume_5m: Optional[float] = Field(description="volume of the token in the last 5 minutes, returns only if include_details is True")
-    volume_15m: Optional[float] = Field(description="volume of the token in the last 15 minutes, returns only if include_details is True")
-    volume_30m: Optional[float] = Field(description="volume of the token in the last 30 minutes, returns only if include_details is True")
-    volume_1h: Optional[float] = Field(description="volume of the token in the last 1 hour, returns only if include_details is True")
-    volume_6h: Optional[float] = Field(description="volume of the token in the last 6 hours, returns only if include_details is True")
-    volume_12h: Optional[float] = Field(description="volume of the token in the last 12 hours, returns only if include_details is True")
-    volume_24h: Optional[float] = Field(description="volume of the token in the last 24 hours, returns only if include_details is True")
-
-
 class GroupInfo(BaseModel):
     id: str = Field(description="id of the group")
     name: str = Field(description="name of the group")
@@ -384,10 +348,20 @@ class CandleStickRequest(BaseModel):
     time_from: str = Field(description="The time from which to start the candle data in ISO 8601 format. Attempt to change this to keep number of candles returned under 64.")
     time_to: Optional[str] = Field(default=None, description="The time to end the candle data in ISO 8601 format. Use only for historic analysis.")
     market_cap: Optional[bool] = Field(default=False, description="Whether to return the marketcap of the token instead of the price")
-    
+
+
 class PrivateKeyRequest(BaseModel):
     wallet: str = Field(description="Name of the wallet to get the mnemonic or private key for")
     key_type: Literal['PRIVATE_KEY', 'MNEMONIC'] = Field(description="Whether to return the private or mnemonic key")
+
+
+class TokenSearchPromptRequest(BaseModel):
+    query: str = Field(description="The token search query from user to generate a graphql query for")
+
+
+class TokenSearchGraphQLQueryRequest(BaseModel):
+    query: str = Field(description="The graphql query to search for tokens")
+
 
 # ------------------------------
 # Container Models for List Inputs
@@ -450,10 +424,6 @@ class UnstakeTransactionRequestContainer(BaseModel):
     unstake_transaction_requests: List[UnstakeTransactionRequest]
 
 
-class TokenSearchResponseContainer(BaseModel):
-    token_search_responses: List[TokenSearchResponse]
-
-
 class TokenDetailsRequestContainer(BaseModel):
     token_details_requests: List[TokenDetailsRequest]
 
@@ -498,6 +468,7 @@ class ListDCAOrderResponseContainer(BaseModel):
 class ListOrderResponseContainer(BaseModel):
     list_order_responses: List[OrderResponse]
 
+
 # ------------------------------
 # API Client
 # ------------------------------
@@ -507,7 +478,7 @@ import logging
 import traceback
 
 class ArmorWalletAPIClient:
-    def __init__(self, access_token: str, base_api_url: str = 'https://app.armorwallet.ai/api/v1', logger=None):
+    def __init__(self, access_token: str, base_api_url: str = 'https://app.armorwallet.ai/api', logger=None):
         self.base_api_url = base_api_url
         self.access_token = access_token
         self.logger = logger
@@ -550,177 +521,177 @@ class ArmorWalletAPIClient:
         """Get balances from a list of wallet and token pairs."""
         # payload = [v.model_dump() for v in data.wallet_token_pairs]
         payload = data.model_dump(exclude_none=True)['wallet_token_pairs']
-        return await self._api_call("POST", "tokens/wallet-token-balance/", payload)
+        return await self._api_call("POST", "v1/tokens/wallet-token-balance/", payload)
 
     async def conversion_api(self, data: ConversionRequestContainer) -> List[ConversionResponse]:
         """Perform a token conversion."""
         # payload = [v.model_dump() for v in data.conversion_requests]
         payload = data.model_dump(exclude_none=True)['conversion_requests']
-        return await self._api_call("POST", "tokens/token-price-conversion/", payload)
+        return await self._api_call("POST", "v1/tokens/token-price-conversion/", payload)
 
     async def swap_quote(self, data: SwapQuoteRequestContainer) -> List[SwapQuoteResponse]:
         """Obtain a swap quote."""
         # payload = [v.model_dump() for v in data.swap_quote_requests]
         payload = data.model_dump(exclude_none=True)['swap_quote_requests']
-        return await self._api_call("POST", "transactions/quote/", payload)
+        return await self._api_call("POST", "v1/transactions/quote/", payload)
 
     async def stake_quote(self, data: StakeQuoteRequestContainer) -> StakeQuoteRequestContainer:
         """Obtain a stake quote."""
         payload = data.model_dump(exclude_none=True)['stake_quote_requests']
-        return await self._api_call("POST", "transactions/quote/", payload)
+        return await self._api_call("POST", "v1/transactions/quote/", payload)
     
     async def unstake_quote(self, data: UnstakeQuoteRequestContainer) -> UnstakeQuoteRequestContainer:
         """Obtain an unstake quote."""
         payload = data.model_dump(exclude_none=True)['unstake_quote_requests']
-        return await self._api_call("POST", "transactions/quote/", payload)
+        return await self._api_call("POST", "v1/transactions/quote/", payload)
 
     async def swap_transaction(self, data: SwapTransactionRequestContainer) -> List[SwapTransactionResponse]:
         """Execute the swap transactions."""
         # payload = [v.model_dump() for v in data.swap_transaction_requests]
         payload = data.model_dump(exclude_none=True)['swap_transaction_requests']
-        return await self._api_call("POST", "transactions/swap/", payload)
+        return await self._api_call("POST", "v1/transactions/swap/", payload)
     
     async def stake_transaction(self, data: StakeTransactionRequestContainer) -> StakeTransactionRequestContainer:
         """Execute the stake transactions."""
         payload = data.model_dump(exclude_none=True)['stake_transaction_requests']
-        return await self._api_call("POST", "transactions/swap/", payload)
+        return await self._api_call("POST", "v1/transactions/swap/", payload)
     
     async def unstake_transaction(self, data: UnstakeTransactionRequestContainer) -> UnstakeTransactionRequestContainer:
         """Execute the unstake transactions."""
         payload = data.model_dump(exclude_none=True)['unstake_transaction_requests']
-        return await self._api_call("POST", "transactions/swap/", payload)
+        return await self._api_call("POST", "v1/transactions/swap/", payload)
 
     async def get_all_wallets(self, data: ListWalletsRequest) -> List[Wallet]:
         """Return all wallets with balances."""
-        return await self._api_call("GET", f"wallets/?is_archived={data.is_archived}")
+        return await self._api_call("GET", f"v1/wallets/?is_archived={data.is_archived}")
     
-    async def search_token(self, data: TokenSearchRequest) -> TokenSearchResponseContainer:
+    async def search_token(self, data: TokenSearchGraphQLQueryRequest) -> Dict:
         """Get details of a token."""
         payload = data.model_dump(exclude_none=True)
-        return await self._api_call("POST", "tokens/search-token/", payload)
+        return await self._api_call("POST", "v2/tokens/search-token/", payload)
 
     async def get_official_token_address(self, data: TokenDetailsRequestContainer) -> TokenDetailsResponseContainer:
         """Retrieve the mint address of token."""
         payload = data.model_dump(exclude_none=True)['token_details_requests']
-        return await self._api_call("POST", "tokens/official-token-detail/", payload)
+        return await self._api_call("POST", "v1/tokens/official-token-detail/", payload)
 
     async def list_groups(self) -> List[GroupInfo]:
         """Return a list of wallet groups."""
-        return await self._api_call("GET", "wallets/groups/")
+        return await self._api_call("GET", "v1/wallets/groups/")
 
     async def list_single_group(self, data: ListSingleGroupRequest) -> SingleGroupInfo:
         """Return details for a single wallet group."""
-        return await self._api_call("GET", f"wallets/groups/{data.group_name}/")
+        return await self._api_call("GET", f"v1/wallets/groups/{data.group_name}/")
 
     async def create_wallet(self, data: CreateWalletRequestContainer) -> List[WalletInfo]:
         """Create new wallets given a list of wallet names."""
         # payload = json.dumps([{"name": wallet_name} for wallet_name in data.wallet_names])
         payload = data.model_dump(exclude_none=True)['create_wallet_requests']
-        return await self._api_call("POST", "wallets/", payload)
+        return await self._api_call("POST", "v1/wallets/", payload)
 
     async def archive_wallets(self, data: ArchiveWalletsRequestContainer) -> List[WalletArchiveOrUnarchiveResponse]:
         """Archive the wallets specified in the list."""
         # payload = json.dumps([{"wallet": wallet_name} for wallet_name in data.wallet_names])
         payload = data.model_dump(exclude_none=True)['archive_wallet_requests']
-        return await self._api_call("POST", "wallets/archive/", payload)
+        return await self._api_call("POST", "v1/wallets/archive/", payload)
 
     async def unarchive_wallets(self, data: UnarchiveWalletsRequest) -> List[WalletArchiveOrUnarchiveResponse]:
         """Unarchive the wallets specified in the list."""
         # payload = json.dumps([{"wallet": wallet_name} for wallet_name in data.wallet_names])
         payload = data.model_dump(exclude_none=True)['unarchive_wallet_requests']
-        return await self._api_call("POST", "wallets/unarchive/", payload)
+        return await self._api_call("POST", "v1/wallets/unarchive/", payload)
 
     async def create_groups(self, data: CreateGroupsRequest) -> List[CreateGroupResponse]:
         """Create new wallet groups given a list of group names."""
         # payload = json.dumps([{"name": group_name} for group_name in data.group_names])
         payload = data.model_dump(exclude_none=True)['create_groups_requests']
-        return await self._api_call("POST", "wallets/groups/", payload)
+        return await self._api_call("POST", "v1/wallets/groups/", payload)
 
     async def add_wallets_to_group(self, data: AddWalletToGroupRequestContainer) -> List[AddWalletToGroupResponse]:
         """Add wallets to a specific group."""
         # payload = json.dumps([{"wallet": wallet_name, "group": data.group_name} for wallet_name in data.wallet_names])
         payload = data.model_dump(exclude_none=True)['add_wallet_to_group_requests']
-        return await self._api_call("POST", "wallets/add-wallet-to-group/", payload)
+        return await self._api_call("POST", "v1/wallets/add-wallet-to-group/", payload)
 
     async def archive_wallet_group(self, data: ArchiveWalletGroupRequestContainer) -> List[GroupArchiveOrUnarchiveResponse]:
         """Archive the specified wallet groups."""
         # payload = json.dumps([{"group": group_name} for group_name in data.group_names])
         payload = data.model_dump(exclude_none=True)['archive_wallet_group_requests']
-        return await self._api_call("POST", "wallets/group-archive/", payload)
+        return await self._api_call("POST", "v1/wallets/group-archive/", payload)
 
     async def unarchive_wallet_group(self, data: UnarchiveWalletGroupRequestContainer) -> List[GroupArchiveOrUnarchiveResponse]:
         """Unarchive the specified wallet groups."""
         # payload = json.dumps([{"group": group_name} for group_name in data.group_names])
         payload = data.model_dump(exclude_none=True)['unarchive_wallet_group_requests']
-        return await self._api_call("POST", "wallets/group-unarchive/", payload)
+        return await self._api_call("POST", "v1/wallets/group-unarchive/", payload)
 
     async def remove_wallets_from_group(self, data: RemoveWalletsFromGroupRequestContainer) -> List[RemoveWalletFromGroupResponse]:
         """Remove wallets from a group."""
         # payload = json.dumps([{"wallet": wallet_name, "group": data.group_name} for wallet_name in data.wallet_names])
         payload = data.model_dump(exclude_none=True)['remove_wallets_from_group_requests']
-        return await self._api_call("POST", "wallets/remove-wallet-from-group/", payload)
+        return await self._api_call("POST", "v1/wallets/remove-wallet-from-group/", payload)
 
     async def transfer_tokens(self, data: TransferTokensRequestContainer) -> List[TransferTokenResponse]:
         """Transfer tokens from one wallet to another."""
         # payload = [v.model_dump() for v in data.transfer_tokens_requests]
         payload = data.model_dump(exclude_none=True)['transfer_tokens_requests']
-        return await self._api_call("POST", "transfers/transfer/", payload)
+        return await self._api_call("POST", "v1/transfers/transfer/", payload)
 
     async def create_dca_order(self, data: DCAOrderRequestContainer) -> List[DCAOrderResponse]:
         """Create a DCA order."""
         # payload = [v.model_dump() for v in data.dca_order_requests]
         payload = data.model_dump(exclude_none=True)['dca_order_requests']
-        return await self._api_call("POST", "transactions/dca-order/create/", payload)
+        return await self._api_call("POST", "v1/transactions/dca-order/create/", payload)
 
     async def list_dca_orders(self, data: ListDCAOrderRequest) -> ListDCAOrderResponseContainer:
         """List all DCA orders."""
         payload = data.model_dump(exclude_none=True)
-        return await self._api_call("POST", f"transactions/dca-order/", payload)
+        return await self._api_call("POST", f"v1/transactions/dca-order/", payload)
 
     async def cancel_dca_order(self, data: CancelDCAOrderRequestContainer) -> List[CancelDCAOrderResponse]:
         """Cancel a DCA order."""
         # payload = [v.model_dump() for v in data.cancel_dca_order_requests]
         payload = data.model_dump(exclude_none=True)['cancel_dca_order_requests']
-        return await self._api_call("POST", "transactions/dca-order/cancel/", payload)
+        return await self._api_call("POST", "v1/transactions/dca-order/cancel/", payload)
     
     async def create_order(self, data: CreateOrderRequestContainer) -> CreateOrderResponseContainer:
         """Create a order."""
         payload = data.model_dump(exclude_none=True)['create_order_requests']
-        return await self._api_call("POST", "transactions/order/create/", payload)
+        return await self._api_call("POST", "v1/transactions/order/create/", payload)
     
     async def list_orders(self, data: ListOrderRequest) -> ListOrderResponseContainer:
         """List all orders."""
         payload = data.model_dump(exclude_none=True)
-        return await self._api_call("POST", f"transactions/order/", payload)
+        return await self._api_call("POST", f"v1/transactions/order/", payload)
     
     async def cancel_order(self, data: CancelOrderRequestContainer) -> CancelOrderResponseContainer:
         """Cancel a order."""
         payload = data.model_dump(exclude_none=True)['cancel_order_requests']
-        return await self._api_call("POST", "transactions/order/cancel/", payload) 
+        return await self._api_call("POST", "v1/transactions/order/cancel/", payload) 
     
     async def top_trending_tokens(self, data: TopTrendingTokensRequest) -> List:
         """Get the top trending tokens."""
         payload = data.model_dump(exclude_none=True)
-        return await self._api_call("POST", f"tokens/trending/", payload)
+        return await self._api_call("POST", f"v1/tokens/trending/", payload)
     
     async def get_stake_balances(self) -> StakeBalanceResponse:
         """Get the stake balances."""
-        return await self._api_call("GET", "frontend/wallets/stake/balance/")
+        return await self._api_call("GET", "v1/frontend/wallets/stake/balance/")
     
     async def rename_wallet(self, data: RenameWalletRequestContainer) -> List:
         """Rename a wallet."""
         payload = data.model_dump(exclude_none=True)['rename_wallet_requests']
-        return await self._api_call("POST", "wallets/rename/", payload)
+        return await self._api_call("POST", "v1/wallets/rename/", payload)
     
     async def get_market_candle_data(self, data: CandleStickRequest) -> Dict:
         """Get the candle sticks."""
         payload = data.model_dump(exclude_none=True)
-        return await self._api_call("POST", f"tokens/candles/", payload)
+        return await self._api_call("POST", f"v1/tokens/candles/", payload)
     
     async def send_key_to_telegram(self, data: PrivateKeyRequest) -> Dict:
         """Send the mnemonic or private key to telegram."""
         payload = data.model_dump(exclude_none=True)
-        return await self._api_call("POST", f"users/telegram/send-message/", payload)
+        return await self._api_call("POST", f"v1/users/telegram/send-message/", payload)
 
 # ------------------------------
 # Utility Functions

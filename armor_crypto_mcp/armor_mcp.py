@@ -35,13 +35,13 @@ from .armor_client import (
     ListDCAOrderRequest,
     ListOrderRequest,
     PrivateKeyRequest,
+    TokenSearchPromptRequest,
+    TokenSearchGraphQLQueryRequest,
     WalletTokenPairsContainer,
     ConversionRequestContainer,
     SwapQuoteRequestContainer,
     SwapTransactionRequestContainer,
     TokenDetailsRequestContainer,
-    TokenSearchRequest,
-    TokenSearchResponseContainer,
     TransferTokensRequestContainer,
     DCAOrderRequestContainer,
     CancelDCAOrderRequestContainer,
@@ -74,7 +74,7 @@ mcp = FastMCP("Armor Crypto MCP")
 
 # Global variable to hold the authenticated Armor API client
 ACCESS_TOKEN = os.getenv('ARMOR_API_KEY') or os.getenv('ARMOR_ACCESS_TOKEN')
-BASE_API_URL = os.getenv('ARMOR_API_URL') or 'https://app.armorwallet.ai/api/v1'
+BASE_API_URL = os.getenv('ARMOR_API_URL') or 'https://app.armorwallet.ai/api'
 
 armor_client = ArmorWalletAPIClient(ACCESS_TOKEN, base_api_url=BASE_API_URL) #, log_path='armor_client.log')
 
@@ -221,19 +221,37 @@ async def search_official_token_address(token_details_requests: TokenDetailsRequ
     except Exception as e:
         return [{"error": str(e)}]
 
+    
 
 @mcp.tool()
-async def search_token_details(token_search_requests: TokenSearchRequest) -> TokenSearchResponseContainer:
+async def get_instructions_to_generate_graphql_query_token_search(token_search_prompt_request: TokenSearchPromptRequest) -> Dict:
     """
-    Search and retrieve details about single token.
-    If only address or symbol is needed, use get_official_token_address first.
-    
-    Expects a TokenSearchRequest, returns a list of TokenDetailsResponse.
+    Get instructions to generate a graphql query for a token search.
+
+    Expects a TokenSearchPromptRequest, returns a dictionary with the instructions.
     """
     if not armor_client:
         return [{"error": "Not logged in"}]
     try:
-        result: TokenSearchResponseContainer = await armor_client.search_token(token_search_requests)
+        with open(os.path.join(os.path.dirname(__file__), 'instructions/filter_tokens.md'), 'r') as f:
+            prompt = f.read().replace('{user_query}', token_search_prompt_request.query)
+        return {'graphql_query_generation_instructions': prompt}
+    except Exception as e:
+        return [{"error": str(e)}]
+
+
+@mcp.tool()
+async def search_token_details(token_search_graphql_query: TokenSearchGraphQLQueryRequest) -> Dict:
+    """
+    Search and retrieve details about single token.
+    If only address or symbol is needed, use get_official_token_address first.
+    
+    Expects a TokenSearchGraphQLQueryRequest, returns a Dict.
+    """
+    if not armor_client:
+        return [{"error": "Not logged in"}]
+    try:
+        result: Dict = await armor_client.search_token(token_search_graphql_query)
         return result
     except Exception as e:
         return [{"error": str(e)}]
