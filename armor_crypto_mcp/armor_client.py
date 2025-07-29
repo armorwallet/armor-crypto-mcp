@@ -851,7 +851,7 @@ class ArmorWalletAPIClient:
     def __init__(
         self,
         access_token: str,
-        base_api_url: str = "https://app.armorwallet.ai/api/v1",
+        base_api_url: str = "https://app.armorwallet.ai/api",
         logger=None,
     ):
         self.base_api_url = base_api_url

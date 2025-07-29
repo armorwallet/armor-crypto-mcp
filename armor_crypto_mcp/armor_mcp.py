@@ -79,7 +79,7 @@ mcp = FastMCP("Armor Crypto MCP")
 
 # Global variable to hold the authenticated Armor API client
 ACCESS_TOKEN = os.getenv("ARMOR_API_KEY") or os.getenv("ARMOR_ACCESS_TOKEN")
-BASE_API_URL = os.getenv("ARMOR_API_URL") or "https://app.armorwallet.ai/api/v1"
+BASE_API_URL = os.getenv("ARMOR_API_URL") or "https://app.armorwallet.ai/api"
 
 armor_client = ArmorWalletAPIClient(
     ACCESS_TOKEN, base_api_url=BASE_API_URL
