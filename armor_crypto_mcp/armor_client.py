@@ -1,7 +1,7 @@
 import json
 import os
 from pydantic import BaseModel, Field
-from typing_extensions import List, Optional, Literal, Dict, Any
+from typing_extensions import List, Optional, Literal, Dict, Any, Union
 from uuid import UUID
 import httpx
 from dotenv import load_dotenv
@@ -322,8 +322,8 @@ class DCAOrderRequest(BaseModel):
     output_token: str = Field(
         description="public address of the output token you want to buy. To get the address from a token symbol use `get_token_details`"
     )
-    input_chain_id: uuid.UUID = Field(description="chain id of the input token")
-    output_chain_id: uuid.UUID = Field(description="chain id of the output token")
+    input_chain_id: UUID = Field(description="chain id of the input token")
+    output_chain_id: UUID = Field(description="chain id of the output token")
     total_amount: float = Field(
         description="total amount of input token to invest. Make sure you enter the correct amount. Use `calculate_token_conversion` to do the necessary conversions."
     )
@@ -351,7 +351,7 @@ class DCAOrderRequest(BaseModel):
     token_address_watcher: Optional[str] = Field(
         description="If the DCA is conditional, public address of the token to watch."
     )
-    token_watcher_chain_id: Optional[uuid.UUID] = Field(
+    token_watcher_chain_id: Optional[UUID] = Field(
         description="chain id of the token to watch"
     )
     watch_field: Optional[Literal["liquidity", "marketCap", "price"]] = Field(
@@ -424,8 +424,8 @@ class CreateOrderRequest(BaseModel):
     output_token: str = Field(
         description="public address of the output token. Always different from input token."
     )
-    input_chain_id: uuid.UUID = Field(description="chain id of the input token")
-    output_chain_id: uuid.UUID = Field(description="chain id of the output token")
+    input_chain_id: UUID = Field(description="chain id of the input token")
+    output_chain_id: UUID = Field(description="chain id of the output token")
     amount: float = Field(description="amount of input token to invest")
     strategy_duration: int = Field(description="duration of the order")
     strategy_duration_unit: Literal[
@@ -440,9 +440,7 @@ class CreateOrderRequest(BaseModel):
     token_address_watcher: str = Field(
         description="public address of the token to watch. should be output token for limit orders and input token for stop loss and take profit orders"
     )
-    token_watcher_chain_id: uuid.UUID = Field(
-        description="chain id of the token to watch"
-    )
+    token_watcher_chain_id: UUID = Field(description="chain id of the token to watch")
     target_value: Optional[float] = Field(
         description="target value to execute the order. You must always specify a target value or delta percentage for non trailing orders. Field should be None for trailing orders."
     )
@@ -919,7 +917,6 @@ class ArmorWalletAPIClient:
     async def swap_quote(self, data: SwapQuoteRequest) -> SwapQuoteResponse | Any:
         """Obtain a swap quote."""
         payload = data.model_dump(exclude_none=True, mode="json")
-        self.logger.info(f"Swap quote payload: {payload}")
         return await self._api_call("POST", "v2/transactions/quote/", payload)
 
     async def bridge_quote(self, data: BridgeQuoteRequest) -> BridgeQuoteResponse | Any:
@@ -940,20 +937,6 @@ class ArmorWalletAPIClient:
         """Execute the bridge transactions."""
         payload = data.model_dump(exclude_none=True)
         return await self._api_call("POST", "v2/transactions/swap/", payload)
-
-    async def stake_transaction(
-        self, data: StakeTransactionRequestContainer
-    ) -> StakeTransactionRequestContainer | Any:
-        """Execute the stake transactions."""
-        payload = data.model_dump(exclude_none=True)["stake_transaction_requests"]
-        return await self._api_call("POST", "v1/transactions/swap/", payload)
-
-    async def unstake_transaction(
-        self, data: UnstakeTransactionRequestContainer
-    ) -> UnstakeTransactionRequestContainer | Any:
-        """Execute the unstake transactions."""
-        payload = data.model_dump(exclude_none=True)["unstake_transaction_requests"]
-        return await self._api_call("POST", "v1/transactions/swap/", payload)
 
     async def get_all_wallets(self, data: ListWalletsRequest) -> WalletContainer | Any:
         """Return all wallets with balances."""
