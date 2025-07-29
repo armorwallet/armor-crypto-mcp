@@ -1142,7 +1142,6 @@ class ArmorWalletAPIClient:
         """Wrap tokens."""
         payload = data.model_dump(exclude_none=True, mode="json")
         payload["wrap_type"] = "WRAP"
-        self.logger.info(f"Wrap tokens payload: {payload}")
         return await self._api_call(
             "POST", "v2/transactions/quote/wrap-unwrap/", payload
         )
@@ -1153,7 +1152,6 @@ class ArmorWalletAPIClient:
         """Unwrap tokens."""
         payload = data.model_dump(exclude_none=True, mode="json")
         payload["wrap_type"] = "UNWRAP"
-        self.logger.info(f"Unwrap tokens payload: {payload}")
         return await self._api_call(
             "POST", "v2/transactions/quote/wrap-unwrap/", payload
         )
