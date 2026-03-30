@@ -125,6 +125,10 @@ To use the Armor MCP with your agent, you need the following configuration, repl
 6. Make sure to replace the placeholder with your API key
 7. Save the file and start a new Chat in Claude Desktop
 
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/armorwallet-armor-crypto-mcp).
+
 ## Use in Cline
 1. Click on the `MCP Servers` button in the Cline tab in VSCode on the left panel
 2. Scroll to the bottom of the left panel and click on `Configure MCP Servers`
