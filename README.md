@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/armorwallet-armor-crypto-mcp-badge.png)](https://mseep.ai/app/armorwallet-armor-crypto-mcp)
+
 # Armor Crypto MCP
 *Alpha Test version 0.1.24*
 
